@@ -2,87 +2,73 @@
 using API.DTOs;
 using API.Entities;
 using API.Interfaces;
-using API.Services;
+using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
-using System.Text;
+
 
 namespace API.Controllers
 {
-    public class AccountController:BaseApiController
+    public class AccountController : BaseApiController
     {
-        private readonly DataContext _context;
         private readonly UserManager<AppUser> _userManager;
-        private readonly IConfiguration _configuration;
-        private readonly IUserRepository _userRepository;
+        private readonly SignInManager<AppUser> _signInManager;
+        private readonly IMapper _mapper;
+        private readonly ITokenService _tokenService;
 
-        public AccountController(DataContext context, 
+        public AccountController(
                                  UserManager<AppUser> userManager,
-                                 IConfiguration configuration,
-                                 IUserRepository userRepository)
+                                 SignInManager<AppUser> signInManager,
+                                 IMapper mapper,
+                                 ITokenService tokenService
+                               )
         {
-            _context = context;
-           _userManager = userManager;
-            _configuration = configuration;
-            _userRepository = userRepository;
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _mapper = mapper;
+            _tokenService = tokenService;
+           
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<AppUserDto>> Register(RegistrationDto registrationDto)
+        public async Task<ActionResult<AppUserReturnDto>> Register(AppUserCreationDto appUser)
         {
-            var userExists = await _userRepository.UserExists(registrationDto.Email);
+            var userExists = await _userManager.Users.AnyAsync(x => x.Email == appUser.Email.ToLower());
             if (userExists)
                 return BadRequest("Email already taken.");
 
 
-            var user = new AppUser
-            {
-                Email = registrationDto.Email,
-                UserName= registrationDto.Email
-            };
+            var user = _mapper.Map<AppUser>(appUser);
+            user.Email = appUser.Email;
 
-            var result = await _userManager.CreateAsync(user,registrationDto.Password);
+            var result = await _userManager.CreateAsync(user, appUser.Password);
 
             if (!result.Succeeded)
-            {
                 return BadRequest(result.Errors);
-            }
-
             
-            var tokenService = new TokenService(_configuration);
-            var token = tokenService.CreateToken(user);
-            return Ok(new AppUserDto
+            return Ok(new AppUserReturnDto
             {
-                Email = registrationDto.Email,
-                Token = token,
-            }) ;
+                Email = appUser.Email,
+                Token = _tokenService.CreateToken(user),
+            });
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<AppUserDto>> Login(LoginDto loginDto)
+        public async Task<ActionResult<AppUserReturnDto>> Login(LoginDto loginDto)
         {
-            var user = await _userRepository.GetUser(loginDto.Email);
-            if(user ==null)
+            var user = _userManager.Users.FirstOrDefault(x => x.Email == loginDto.Email.ToLower());
+            if (user == null)
                 return Unauthorized("Invalid email");
 
-            var hmac = new HMACSHA512();
-            var computeLoginPasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.Password));
+           var result = await _signInManager.CheckPasswordSignInAsync(user,loginDto.Password,false);
 
-            for(int i =0; i<=computeLoginPasswordHash.Length; i++)
+            if (!result.Succeeded) return Unauthorized("Invalid password");
+
+            return new AppUserReturnDto
             {
-              if(computeLoginPasswordHash[i] != user.PasswordHash[i])
-                    return Unauthorized("Invalid password");
-            }
-
-            var tokenService = new TokenService(_configuration);
-            var token = tokenService.CreateToken(user) ;
-
-            return new AppUserDto
-            {
-                Email= loginDto.Email,
-                Token = token,
+                Email = user.Email,
+                Token = _tokenService.CreateToken(user),
             };
         }
 

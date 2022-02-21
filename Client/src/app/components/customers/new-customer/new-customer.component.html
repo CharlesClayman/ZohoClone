@@ -1,0 +1,528 @@
+<div class="container">
+  <div class="title">
+    <h3>New Customer</h3>
+  </div>
+  <hr />
+  <form
+    [formGroup]="customerForm"
+    #customer="ngForm"
+    (ngSubmit)="createCustomer()"
+  >
+    <div class="basic-info">
+      <!--Customer Type-->
+      <label>Customer Type</label>
+      <div class="radioWrapperr">
+        <input
+          type="radio"
+          formControlName="customerType"
+          [value]="customerType.Business"
+        /><label style="margin-right: 10px">Business</label>
+        <input
+          type="radio"
+          formControlName="customerType"
+          [value]="customerType.Individual"
+        /><label>Individual</label>
+      </div>
+
+      <!--Primary Contact-->
+      <label style="color: red">Primary Contact*</label>
+      <div class="wrapper">
+        <select
+          class="form-select form-select-sm mb-1"
+          formControlName="salutation"
+        >
+          <option
+            [ngValue]="sal.key"
+            *ngFor="let sal of salutationEnums; trackBy: salutationIdentifier"
+          >
+            {{ sal.value }}
+          </option>
+        </select>
+        <input
+          type="text"
+          class="form-control form-control-sm"
+          formControlName="firstName"
+          placeholder="First Name"
+        />
+        <input
+          type="text"
+          class="form-control form-control-sm"
+          formControlName="lastName"
+          placeholder="Last Name"
+        />
+      </div>
+      <!--Company Name-->
+      <label>Company Name</label>
+      <div class="wrapper">
+        <input
+          type="text"
+          class="form-control form-control-sm"
+          formControlName="companyName"
+          placeholder="Company Name"
+        />
+      </div>
+      <!--Customer Display Name-->
+      <label style="color: red">Customer Display Name*</label>
+      <div class="wrapper">
+        <input
+          type="text"
+          class="form-control form-control-sm"
+          formControlName="displayName"
+          placeholder="Display name"
+        />
+      </div>
+      <!--Customer Email-->
+      <label>Customer Email</label>
+      <div class="wrapper">
+        <input
+          type="text"
+          class="form-control form-control-sm"
+          formControlName="email"
+          placeholder="Email"
+        />
+      </div>
+      <!--Customer Phone-->
+      <label>Customer Phone</label>
+      <div class="wrapper">
+        <input
+          type="text"
+          class="form-control form-control-sm"
+          formControlName="workPhone"
+          placeholder="Work Phone"
+        />
+        <input
+          type="text"
+          class="form-control form-control-sm"
+          formControlName="mobile"
+          placeholder="Mobile"
+        />
+      </div>
+      <!--Website-->
+      <label>Website</label>
+      <div class="wrapper">
+        <input
+          type="text"
+          class="form-control form-control-sm"
+          formControlName="website"
+          placeholder="Website"
+        />
+      </div>
+    </div>
+    <br /><br />
+    <!--Tabset-->
+    <div class="tabset-container">
+      <tabset>
+        <tab heading="Other Details" id="tab1"
+          ><br />
+          <div class="otherDetails" formGroupName="otherDetails">
+            <!--Currency-->
+            <label style="color: red">Currency*</label>
+            <div class="wrapper">
+              <select
+                class="form-select form-select-sm mb-1"
+                formControlName="currency"
+              >
+                <option [ngValue]="item" *ngFor="let item of currencies">
+                  {{ item }}
+                </option>
+              </select>
+            </div>
+            <!--Tax Rate-->
+            <label>Tax Rate</label>
+            <div class="wrapper">
+              <select
+                class="form-select form-select-sm mb-1"
+                formControlName="taxRate"
+                (ngModelChange)="openTaxModal($event, taxTemplate)"
+              >
+                <option [ngValue]="item['taxRate']" *ngFor="let item of taxes">
+                  {{ item["taxName"] }}
+                </option>
+                <option value="configure">Create Tax</option>
+              </select>
+            </div>
+            <!--Payment terms-->
+            <label>Payment terms</label>
+            <div class="wrapper">
+              <select
+                class="form-select form-select-sm mb-1"
+                formControlName="paymentTerms"
+                (ngModelChange)="openTermModal($event, termTemplate)"
+              >
+                <option [ngValue]="item" *ngFor="let item of termsList">
+                  {{ item }}
+                </option>
+                <option value="configure">Configure terms</option>
+              </select>
+            </div>
+            <!--Enable Portal For Customer-->
+            <label>Allow portal access for this customer? </label>
+            <div class="wrapper">
+              <select
+                class="form-select form-select-sm mb-1"
+                formControlName="enablePortal"
+              >
+                <option
+                  *ngFor="
+                    let item of enablePortalEnums;
+                    trackBy: enablePortalIdentifier
+                  "
+                  [ngValue]="item.key"
+                >
+                  {{ item.value }}
+                </option>
+              </select>
+            </div>
+            <!--Facebook-->
+            <label style="display: inline-flex">Facebook</label>
+            <div class="wrapper">
+              <input
+                type="text"
+                formControlName="facebook"
+                class="form-control form-control-sm"
+                placeholder="Facebook"
+              />
+            </div>
+            <!--Twitter-->
+            <label style="display: inline-flex">Twitter</label>
+            <div class="wrapper">
+              <input
+                type="text"
+                formControlName="twitter"
+                class="form-control form-control-sm"
+                placeholder="Twitter"
+              />
+            </div>
+          </div>
+        </tab>
+        <tab heading="Address">
+          <ng-container>
+            <ng-container formArrayName="address">
+              <ng-container
+                *ngFor="let address of addresses.controls; let i = index"
+              >
+                <br />
+                <h4>{{ addressTypeName(i) }}</h4>
+                <br />
+                <form [formGroup]="addressType(i)">
+                  <div class="address">
+                    <!--Attention-->
+                    <label style="display: inline-flex">Attention</label>
+                    <div class="wrapper">
+                      <input
+                        type="text"
+                        formControlName="attention"
+                        class="form-control form-control-sm"
+                      />
+                    </div>
+                    <!--Country Or Region-->
+                    <label>Country/Region</label>
+                    <div class="wrapper">
+                      <select
+                        class="form-select form-select-sm mb-1"
+                        formControlName="countryOrRegion"
+                      >
+                        <option [ngValue]="item" *ngFor="let item of countries">
+                          {{ item }}
+                        </option>
+                      </select>
+                    </div>
+                    <!--Address-->
+                    <label>Address</label>
+                    <div class="wrapper">
+                      <textarea
+                        name="address"
+                        rows="4"
+                        cols="40"
+                        placeholder="street 1"
+                        formControlName="streetOneAddress"
+                      >
+                      </textarea>
+                      <textarea
+                        name="address"
+                        rows="4"
+                        cols="40"
+                        placeholder="street 2"
+                        formControlName="streetTwoAddress"
+                      >
+                      </textarea>
+                    </div>
+                    <!--City-->
+                    <label>City</label>
+                    <div class="wrapper">
+                      <input
+                        type="text"
+                        formControlName="city"
+                        class="form-control form-control-sm"
+                      />
+                    </div>
+                    <!--State-->
+                    <label>State</label>
+                    <div class="wrapper">
+                      <input
+                        type="text"
+                        formControlName="state"
+                        class="form-control form-control-sm"
+                      />
+                    </div>
+                    <!--Zip Code-->
+                    <label>Zip Code</label>
+                    <div class="wrapper">
+                      <input
+                        type="text"
+                        formControlName="zipCode"
+                        class="form-control form-control-sm"
+                      />
+                    </div>
+                    <!--Phone-->
+                    <label>Phone</label>
+                    <div class="wrapper">
+                      <input
+                        type="text"
+                        formControlName="phone"
+                        class="form-control form-control-sm"
+                      />
+                    </div>
+                    <!--Fax-->
+                    <label>Fax</label>
+                    <div class="wrapper">
+                      <input
+                        type="text"
+                        formControlName="fax"
+                        class="form-control form-control-sm"
+                      />
+                    </div>
+                  </div>
+                </form>
+                <br />
+              </ng-container>
+            </ng-container>
+          </ng-container>
+        </tab>
+        <tab heading="Contact Persons"
+          ><br />
+          <!--Contact Persons-->
+          <table>
+            <tr>
+              <th>Salutation</th>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Email Address</th>
+              <th>Work Phone</th>
+              <th>Mobile</th>
+            </tr>
+            <ng-container formArrayName="contactPersons">
+              <ng-container
+                *ngFor="let contact of contactPersons.controls; let i = index"
+              >
+                <tr [formGroupName]="i">
+                  <td>
+                    <select
+                      class="form-select form-select-sm mb-1"
+                      formControlName="salutation"
+                    >
+                      <option
+                        [ngValue]="sal.key"
+                        *ngFor="let sal of salutationEnums"
+                      >
+                        {{ sal.value }}
+                      </option>
+                    </select>
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      formControlName="firstName"
+                      class="form-control form-control-sm"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      formControlName="lastName"
+                      class="form-control form-control-sm"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      formControlName="email"
+                      class="form-control form-control-sm"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      formControlName="workPhone"
+                      class="form-control form-control-sm"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      formControlName="mobile"
+                      class="form-control form-control-sm"
+                    />
+                  </td>
+                  <ng-container *ngIf="contactPersons.controls[1]">
+                    <button
+                      type="button"
+                      class="btn"
+                      style="color: blue"
+                      (click)="removeContactPerson()"
+                      type="button"
+                    >
+                      - Remove contact
+                    </button>
+                  </ng-container>
+                </tr>
+              </ng-container>
+              <ng-container *ngIf="contactPersons.controls.length < 2">
+                <button
+                  type="button"
+                  class="btn"
+                  style="color: blue"
+                  (click)="addContactPerson()"
+                  type="button"
+                >
+                  + Add contact
+                </button>
+              </ng-container>
+            </ng-container>
+          </table>
+        </tab>
+        <tab heading="Remarks"
+          ><br />
+          <!--Remarks-->
+          <p>Remarks(For Internal Use)</p>
+          <div class="input-group">
+            <label></label>
+            <textarea
+              name="remark"
+              formControlName="remarks"
+              rows="4"
+              cols="80"
+            >
+            </textarea>
+          </div>
+        </tab>
+      </tabset>
+    </div>
+    <div class="save-cancel mt-5">
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="!customerFormValid()"
+      >
+        Save
+      </button>
+      <button type="button" class="btn">Cancel</button>
+    </div>
+    <br /><br />
+  </form>
+</div>
+
+<ng-template #taxTemplate>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">New Tax</h4>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="taxForm" (submit)="createTax()">
+      <div class="tax-modal-container">
+        <label style="color: red">Tax Name*</label>
+        <input
+          type="text"
+          class="form-control form-control-sm"
+          formControlName="taxName"
+          placeholder="VAT"
+          style="margin-right: 5px"
+        />
+        <label style="color: red">Rate(%)*</label>
+        <input
+          type="number"
+          class="form-control form-control-sm"
+          formControlName="taxRate"
+          placeholder="0"
+          style="margin-right: 5px"
+        />
+        <div style="margin-top: 5px">
+          <label>This tax is a compound tax?</label>
+          <input
+            type="checkbox"
+            formControlName="compoundTax"
+            [value]="true"
+            style="margin-left: 10px"
+          />
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="submit"
+      class="btn btn-primary"
+      (click)="createTax()"
+      [disabled]="!taxFormValid()"
+    >
+      Save
+    </button>
+    <button type="button" class="btn btn-default" (click)="closeModal()">
+      Close
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #termTemplate>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">New Term</h4>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="termForm" (submit)="createTerm()">
+      <div class="term-modal-container">
+        <label style="color: red">Term Name*</label>
+        <label style="color: red">Number Of Days*</label>
+        <input
+          type="text"
+          class="form-control form-control-sm"
+          placeholder="Net 30"
+          style="margin-left: 5px"
+          disabled
+        />
+        <input
+          type="text"
+          class="form-control form-control-sm"
+          placeholder="30"
+          style="margin-right: 5px"
+          disabled
+        />
+        <input
+          type="text"
+          class="form-control form-control-sm"
+          formControlName="termName"
+          placeholder="Net 0"
+          style="margin-left: 5px"
+        />
+        <input
+          type="number"
+          class="form-control form-control-sm"
+          formControlName="termDays"
+          placeholder="0"
+          style="margin-right: 5px"
+        />
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="submit"
+      class="btn btn-primary"
+      (click)="createTerm()"
+      [disabled]="!termFormValid()"
+    >
+      Save
+    </button>
+    <button type="button" class="btn btn-default" (click)="closeModal()">
+      Close
+    </button>
+  </div>
+</ng-template>

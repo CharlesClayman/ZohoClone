@@ -7,15 +7,17 @@ namespace API.Entities
         public Guid Id { get; set; }
         [Required]
         public DateTime Date { get; set; }
-        public Guid CategoryId { get; set; }
         [Required]
-        public Category Category { get; set; }
-        public int Amount { get; set; }
-        public int Tax { get; set; }
+        public Guid CategoryId { get; set; }
+        public virtual Category Category { get; set; }
+        public decimal Amount { get; set; }
+        public Guid? TaxId { get; set; }
+        public virtual Tax Tax { get; set; }
         public int ReferenceNumber { get; set; }
         public string Notes { get; set; }
-        public Guid Customerid { get; set; }
-        public Customer CustomerName { get; set; }
+        public Guid? CustomerId { get; set; }
+        public virtual Customer Customer { get; set; }
+       
 
     }
 }

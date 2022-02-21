@@ -1,0 +1,74 @@
+.title {
+  margin-top: 10px;
+}
+
+.error {
+  color: rgb(172, 76, 76);
+}
+
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td,
+th {
+  border: 1px solid #dddddd;
+  text-align: left;
+}
+
+.basic-info {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-column-gap: 5%;
+  grid-column-start: 1;
+  grid-row-gap: 20px;
+}
+
+.otherDetails {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-column-gap: 5%;
+  grid-column-start: 1;
+  grid-row-gap: 20px;
+}
+
+.address {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-column-gap: 5%;
+  grid-column-start: 1;
+  grid-row-gap: 20px;
+}
+
+.wrapper {
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+  grid-column-gap: 1%;
+}
+
+.radioWrapper {
+  display: grid;
+  grid-template-columns: 2px 2px 2px 2px;
+}
+
+.save-cancel {
+  display: grid;
+  grid-template-columns: 20% 20%;
+  grid-column-gap: 20px;
+  grid-column-start: 1;
+  grid-row-gap: 20px;
+}
+
+.term-modal-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 10px;
+  margin: 5px;
+}
+
+.tax-modal-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}

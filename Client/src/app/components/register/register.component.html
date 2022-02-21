@@ -1,0 +1,67 @@
+<div class="container">
+  <form
+    [formGroup]="registrationForm"
+    #registerForm="ngForm"
+    (submit)="register()"
+  >
+    <h2 class="text-center">Sign Up</h2>
+    <div class="form-floating mt-3 mb-3">
+      <input
+        type="text"
+        class="form-control"
+        formControlName="firstName"
+        placeholder="FirstName"
+      />
+      <label for="firstname">First Name</label>
+    </div>
+
+    <div class="form-floating mt-3 mb-3">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="LastName"
+        formControlName="lastName"
+      />
+      <label for="lastname">Last Name</label>
+    </div>
+
+    <div class="form-floating d-flex mb-3 mt-3">
+      <input
+        type="email"
+        class="form-control"
+        formControlName="email"
+        placeholder="Enter email"
+      />
+      <label for="email">Email</label>
+    </div>
+
+    <div class="form-floating mt-3 mb-3">
+      <input
+        type="text"
+        class="form-control"
+        formControlName="password"
+        placeholder="Enter password"
+      />
+      <label for="pwd">Password</label>
+    </div>
+
+    <div class="form-floating mt-3 mb-3">
+      <input
+        type="text"
+        class="form-control"
+        formControlName="companyName"
+        placeholder="Company Name"
+      />
+      <label for="comapanyname">Company Name</label>
+    </div>
+    <div class="btn-container">
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="!registrationFormValid()"
+      >
+        Register
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,18 @@
+.container{
+    width: 500px;
+    margin-top:50px;
+}
+
+.btn-container{
+    text-align: center;
+    margin-top: 50px;
+}
+
+.btn{
+    background-color: #01A1FF;
+}
+
+h2.text-center{
+    color: #01A1FF;;
+    margin-bottom: 30px;
+}

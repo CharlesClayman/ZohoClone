@@ -1,0 +1,145 @@
+<div class="container">
+  <div class="details-Container">
+    <div class="card">
+      <img
+        src="../../../../assets/images/user.png"
+        alt=""
+        class="img-thumbnail"
+      />
+      <div class="card-body">
+        <div>
+          <strong>ID:</strong>
+          <p>{{ customer.id }}</p>
+        </div>
+        <div>
+          <strong>Name:</strong>
+          <p>{{ customer.firstName + " " + customer.lastName }}</p>
+        </div>
+        <div>
+          <strong>Work Phone:</strong>
+          <p>{{ customer.workPhone }}</p>
+          <strong>Mobile:</strong>
+          <p>{{ customer.mobile }}</p>
+        </div>
+        <div>
+          <strong>Customer Type:</strong>
+          <p *ngIf="customer.customerType === 0">Business</p>
+          <p *ngIf="customer.customerType === 1">Individual</p>
+        </div>
+        <div>
+          <strong>Company name:</strong>
+          <p>{{ customer.companyName }}</p>
+        </div>
+        <div>
+          <strong>Website:</strong>
+          <p>{{ customer.website }}</p>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="btn-group d-flex">
+          <button
+            class="btn btn-primary"
+            routerLink="/customers/{{ customer.id }}/edit"
+          >
+            Edit
+          </button>
+          <button class="btn btn-success">Delete</button>
+        </div>
+      </div>
+    </div>
+    <tabset class="member-tabset">
+      <tab heading="Other Details">
+        <div>
+          <strong>Currency:</strong>
+          <p>{{ otherDetails?.currency }}</p>
+        </div>
+        <div>
+          <strong>Tax Rate:</strong>
+          <p>{{ otherDetails?.taxRate }}</p>
+        </div>
+        <div>
+          <strong>Payment Terms:</strong>
+          <p>{{ otherDetails?.paymentTerms }}</p>
+        </div>
+        <div>
+          <strong>Allow portal access for Customer:</strong>
+          <p *ngIf="otherDetails?.enablePortal === 0">Yes</p>
+          <p *ngIf="otherDetails?.enablePortal === 1">No</p>
+        </div>
+        <div>
+          <strong>Facebook:</strong>
+          <p>{{ otherDetails?.facebook }}</p>
+        </div>
+        <div>
+          <strong>Twitter:</strong>
+          <p>{{ otherDetails?.twitter }}</p>
+        </div>
+      </tab>
+      <tab heading="Address">
+        <div class="address-container">
+          <div class="biiling">
+            <h4>Billing Address</h4>
+            <hr />
+            <strong>Attention:</strong>
+            <p>{{ billingAddress.attention }}</p>
+            <strong>Country/Region:</strong>
+            <p>{{ billingAddress.countryOrRegion }}</p>
+            <strong>Address:</strong>
+            <p>{{ billingAddress.streetOneAddress }}</p>
+            <p>{{ billingAddress.streetTwoAddress }}</p>
+            <strong>City:</strong>
+            <p>{{ billingAddress.city }}</p>
+            <strong>State:</strong>
+            <p>{{ billingAddress.state }}</p>
+            <strong>ZipCode:</strong>
+            <p>{{ billingAddress.zipCode }}</p>
+            <strong>Phone:</strong>
+            <p>{{ billingAddress.phone }}</p>
+            <strong>Fax:</strong>
+            <p>{{ billingAddress.fax }}</p>
+          </div>
+          <div class="Shipping">
+            <h4>Shipping Address</h4>
+            <hr />
+            <strong>Attention:</strong>
+            <p>{{ shippingAddress.attention }}</p>
+            <strong>Country/Region:</strong>
+            <p>{{ shippingAddress.countryOrRegion }}</p>
+            <strong>Address:</strong>
+            <p>{{ shippingAddress.streetOneAddress }}</p>
+            <p>{{ shippingAddress.streetTwoAddress }}</p>
+            <strong>City:</strong>
+            <p>{{ shippingAddress.city }}</p>
+            <strong>State:</strong>
+            <p>{{ shippingAddress.state }}</p>
+            <strong>ZipCode:</strong>
+            <p>{{ shippingAddress.zipCode }}</p>
+            <strong>Phone:</strong>
+            <p>{{ shippingAddress.phone }}</p>
+            <strong>Fax:</strong>
+            <p>{{ shippingAddress.fax }}</p>
+          </div>
+        </div>
+      </tab>
+
+      <tab heading="Contact Person(s)">
+        <table>
+          <tr *ngFor="let contact of contactPersons">
+            <td *ngIf="contact.salutation === 0">Mr.</td>
+            <td *ngIf="contact.salutation === 1">Mrs.</td>
+            <td *ngIf="contact.salutation === 2">Ms.</td>
+            <td *ngIf="contact.salutation === 3">Miss.</td>
+            <td *ngIf="contact.salutation === 4">Dr.</td>
+            <td>
+              {{ contact.firstName + " " + contact.lastName }}
+            </td>
+            <td>{{ contact.email }}</td>
+          </tr>
+        </table>
+      </tab>
+      <tab heading="Remarks">
+        <p>{{ customer.remarks }}</p>
+      </tab>
+    </tabset>
+  </div>
+</div>

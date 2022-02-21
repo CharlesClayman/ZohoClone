@@ -1,0 +1,49 @@
+<div class="container">
+  <div class="card">
+    <form [formGroup]="loginForm" #registerForm="ngForm" (submit)="login()">
+      <h2 class="text-center">Login</h2>
+      <div class="form-floating d-flex mt-3">
+        <input
+          type="email"
+          class="form-control"
+          id="email"
+          placeholder="Enter email"
+          formControlName="email"
+          name="email"
+        />
+        <label for="email">Email</label>
+      </div>
+      <span
+        *ngIf="submitted && loginForm.controls.email.errors?.required"
+        style="color: red"
+        >Email is required*</span
+      >
+      <div class="form-floating mt-4 mb-3">
+        <input
+          type="password"
+          class="form-control"
+          id="pwd"
+          placeholder="Enter password"
+          formControlName="password"
+          name="password"
+        />
+        <label for="pwd">Password</label>
+      </div>
+      <span
+        *ngIf="submitted && loginForm.controls.password.errors?.required"
+        style="color: red"
+        >Password is required*</span
+      >
+      <div class="forgot-password">
+        <h6>forgot password</h6>
+      </div>
+      <div class="btn-container">
+        <button type="submit" class="btn btn-primary">Sign in</button>
+      </div>
+    </form>
+  </div>
+  <div class="SignUp" style="margin-left: 10px">
+    Do you have an account?
+    <a class="" routerLink="/register" style="text-decoration: none">SignUp</a>
+  </div>
+</div>

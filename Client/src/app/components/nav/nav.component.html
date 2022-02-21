@@ -1,0 +1,64 @@
+<ng-container *ngIf="accountService.currentUser$ | async">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <div class="btn-group" dropdown>
+            <div class="dropdown-button">
+              <button
+                id="button-basic"
+                dropdownToggle
+                type="button"
+                class="btn dropdown-toggle"
+                aria-controls="dropdown-basic"
+                (click)="toggleSidebar()"
+              >
+                ZohoClone <span class="caret"></span>
+              </button>
+            </div>
+          </div>
+          <div>
+            <hr width="1" size="30" style="margin: 0%; padding: 0%" />
+          </div>
+          <div class="icon-container">
+            <img src="assets/_icons/history.png" width="25px" height="25px" />
+          </div>
+
+          <form class="d-flex">
+            <input
+              class="form-control me-2"
+              type="search"
+              placeholder="Search"
+              aria-label="Search"
+            />
+          </form>
+        </ul>
+        <div class="icon-container">
+          <img
+            src="assets/_icons/notification.png"
+            width="25px"
+            height="25px"
+          />
+        </div>
+        <div class="icon-container">
+          <img src="assets/_icons/settings.png" width="25px" height="25px" />
+        </div>
+        <div class="icon-container">
+          <img src="assets/_icons/question.png" width="25px" height="25px" />
+        </div>
+        <button (click)="logout()">Logout</button>
+      </div>
+    </div>
+  </nav>
+</ng-container>

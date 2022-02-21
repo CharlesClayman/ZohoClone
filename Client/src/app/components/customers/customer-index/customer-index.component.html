@@ -1,0 +1,93 @@
+<div class="container">
+  <div class="row mt-3">
+    <div class="col">
+      <h3>All Customers</h3>
+    </div>
+    <div class="col" id="new-customer-button">
+      <button type="button" class="btn btn-primary" routerLink="/customers/new">
+        + New
+      </button>
+    </div>
+  </div>
+  <hr />
+
+  <table *ngIf="customers.length > 0">
+    <tr>
+      <th>NAME</th>
+      <th>COMPANY NAME</th>
+      <th>EMAIL</th>
+      <th>WORK PHONE</th>
+    </tr>
+    <tr
+      class="clickable"
+      routerLink="/customers/{{ customer['id'] }}"
+      *ngFor="let customer of customers"
+    >
+      <td>{{ customer["firstName"] + " " + customer["lastName"] }}</td>
+      <td>{{ customer["companyName"] }}</td>
+      <td>{{ customer["email"] }}</td>
+      <td>{{ customer["workPhone"] }}</td>
+    </tr>
+  </table>
+</div>
+
+<ng-template #customerDetail>
+  <div class="row">
+    <div class="col-4">
+      <div class="card">
+        <img
+          src="{{ '.assets/user.png' }}"
+          alt=""
+          class="card-img-top img-thumbnail"
+        />
+        <div class="card-body">
+          <div>
+            <strong>Location:</strong>
+            <p>/p></p>
+          </div>
+
+          <div>
+            <strong>Age:</strong>
+            <p></p>
+          </div>
+          <div>
+            <strong>Last Active:</strong>
+            <p></p>
+          </div>
+          <div>
+            <strong>Member since:</strong>
+            <p></p>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="btn-group d-flex">
+            <button class="btn btn-primary">Like</button>
+            <button class="btn btn-success">Message</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-8">
+      <tabset class="member-tabset">
+        <tab heading="About">
+          <h4>Description</h4>
+          <p></p>
+          <h4>Looking for</h4>
+          <p></p>
+        </tab>
+        <tab heading="Interests">
+          <h4>Interests</h4>
+          <p></p>
+        </tab>
+
+        <tab heading="Photos">
+          <p>Photos will go here</p>
+        </tab>
+        <tab heading="Messages">
+          <p>Messages will go here</p>
+        </tab>
+      </tabset>
+    </div>
+  </div>
+</ng-template>

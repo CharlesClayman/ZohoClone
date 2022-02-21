@@ -1,0 +1,28 @@
+.img-thumbnail {
+  width: 40%;
+  height: 40%;
+  align-self: center;
+}
+
+.details-Container {
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-column-gap: 10px;
+}
+
+.container {
+  width: 70%;
+  height: 50%;
+}
+
+.card-footer {
+  padding: 10px 15px;
+  background-color: #fff;
+  border-top: none;
+}
+
+.address-container {
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-column-gap: 20px;
+}
