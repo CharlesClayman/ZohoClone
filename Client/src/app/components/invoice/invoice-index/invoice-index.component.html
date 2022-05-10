@@ -1,0 +1,108 @@
+<div class="container">
+  <div class="row mt-3">
+    <div class="col">
+      <h3>All Invoices</h3>
+    </div>
+    <div class="col" id="new-item-button">
+      <button type="button" class="btn btn-primary" routerLink="/invoices/new">
+        + New
+      </button>
+    </div>
+  </div>
+  <hr />
+
+  <table class="table" *ngIf="invoices.length > 0">
+    <tr>
+      <th>DATE</th>
+      <th>INVOICE#</th>
+      <th>ORDER NUMBER</th>
+      <th>CUSTOMER</th>
+      <th>STATUS</th>
+      <th>DUE DATE</th>
+      <th>AMOUNT</th>
+      <th>ACTION</th>
+    </tr>
+    <tr *ngFor="let invoice of invoices">
+      <td>{{ invoice["invoiceDate"] | date: "dd/MM/YYYY" }}</td>
+      <td>{{ invoice["invoiceNumber"] }}</td>
+      <td>{{ invoice["orderNumber"] }}</td>
+      <td>
+        {{ invoice["customer"]?.firstName }} {{ invoice["customer"]?.lastName }}
+      </td>
+      <td style="color: chartreuse" *ngIf="invoice['paid'] === true">
+        <b>Paid</b>
+      </td>
+
+      <td style="color: red" *ngIf="invoice['paid'] === false">
+        <b>Unpaid</b>
+      </td>
+      <td>{{ invoice["dueDate"] | date: "dd/MM/YYYY" }}</td>
+      <td>
+        {{ invoice["customer"]?.otherDetails?.currency?.substring(0, 3) }}
+        {{ invoice["total"] }}
+      </td>
+      <td>
+        <div class="btn-group" dropdown>
+          <button
+            id="button-basic"
+            dropdownToggle
+            type="button"
+            class="btn btn-primary dropdown-toggle"
+            aria-controls="dropdown-basic"
+          >
+            <span class="caret"></span>
+          </button>
+          <ul
+            id="dropdown-basic"
+            *dropdownMenu
+            class="dropdown-menu"
+            role="menu"
+            aria-labelledby="button-basic"
+          >
+            <li role="menuitem">
+              <a
+                class="dropdown-item"
+                (click)="updatePaymentStatus(invoice)"
+                >Mark As Paid</a
+              >
+            </li>
+            <li class="divider dropdown-divider"></li>
+            <li role="menuitem">
+              <a
+                class="dropdown-item"
+                routerLink="/invoices/{{ invoice['id'] }}/preview"
+                >Preview</a
+              >
+            </li>
+            <li class="divider dropdown-divider"></li>
+            <li role="menuitem">
+              <a
+                class="dropdown-item"
+                routerLink="/invoices/{{ invoice['id'] }}/edit"
+                >Edit</a
+              >
+            </li>
+            <li class="divider dropdown-divider"></li>
+            <li role="menuitem">
+              <a class="dropdown-item" (click)="openModal(invoice, deleteModal)"
+                >Delete</a
+              >
+            </li>
+          </ul>
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<ng-template #deleteModal>
+  <div class="modal-body text-center">
+    <p>Do you want to delete?</p>
+    <button type="button" class="btn btn-default" (click)="deleteInvoice()">
+      Yes
+    </button>
+    <button type="button" class="btn btn-primary" (click)="closeModal()">
+      No
+    </button>
+  </div>
+</ng-template>

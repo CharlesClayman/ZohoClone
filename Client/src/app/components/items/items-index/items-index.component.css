@@ -1,0 +1,35 @@
+.modal {
+  top: 50%;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td,
+th {
+  text-align: left;
+}
+
+tr {
+  height: 40px;
+}
+
+tr:hover {
+  background-color: #ddd;
+}
+
+[data-href] {
+  cursor: pointer;
+}
+
+.details-content {
+  display: Grid;
+  grid-template-columns: auto 1fr;
+  grid-column-gap: 10px;
+}
+
+.modal {
+  top: 50% !important;
+}

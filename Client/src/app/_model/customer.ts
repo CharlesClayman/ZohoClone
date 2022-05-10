@@ -5,7 +5,7 @@ import { ContactPersons } from './contactPerson';
 import { OtherDetails } from './customerOtherDetails';
 import { Expenses } from './expenses';
 
-import { Incomes } from './income';
+import { Income } from './income';
 
 export interface Customer {
   id: Guid;
@@ -20,11 +20,11 @@ export interface Customer {
   mobilePhone: string;
   website: string;
   remarks: string;
-  otherDetails: OtherDetails[];
+  otherDetails: OtherDetails;
   address: Address[];
   contactPersons: ContactPersons[];
   expenses: Expenses[];
-  incomes: Incomes[];
+  incomes: Income[];
 }
 
 export enum CustomerType {

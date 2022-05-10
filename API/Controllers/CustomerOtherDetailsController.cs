@@ -3,6 +3,7 @@ using API.Entities;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
@@ -40,7 +41,10 @@ namespace API.Controllers
             {
                 return NotFound();
             }
-            var customerOtherDetail = await _customerOtherDetailRepository.GetSingleAsync(customerOtherDetailId);
+            var customerOtherDetail = await _customerOtherDetailRepository.GetSingleAsQueryable()
+                .Where(x=>x.IsDeleted == false)
+                .Where(x=>x.Id == customerOtherDetailId)
+                .FirstOrDefaultAsync();
 
             return Ok(_mapper.Map<CustomerOtherDetailsReturnDto>(customerOtherDetail));
         }
@@ -48,7 +52,10 @@ namespace API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCustomerOtherDetails()
         {
-            var customerOtherDetails = await _customerOtherDetailRepository.GetAllAsync();
+            var customerOtherDetails = await _customerOtherDetailRepository.GetAllAsQueryable()
+                .Where(x=>x.IsDeleted==false)
+                .ToListAsync();
+
             if (customerOtherDetails == null)
                 return NotFound();
 
@@ -63,8 +70,8 @@ namespace API.Controllers
             {
                 NotFound();
             }
-            var customerOtherDetailEntity = await _customerOtherDetailRepository.GetSingleAsync(customerOtherDetailId);
-            _customerOtherDetailRepository.Delete(customerOtherDetailEntity);
+            var customerOtherDetailEntity = await _customerOtherDetailRepository.GetSingle(customerOtherDetailId);
+            customerOtherDetailEntity.IsDeleted = true;
             await _customerOtherDetailRepository.SaveChangesAsync();
 
             return NoContent();
@@ -78,7 +85,7 @@ namespace API.Controllers
             {
                 NotFound();
             }
-            var customerOtherDetailFromRepo = await _customerOtherDetailRepository.GetSingleAsync(customerOtherDetailId);
+            var customerOtherDetailFromRepo = await _customerOtherDetailRepository.GetSingle(customerOtherDetailId);
 
             _mapper.Map(customerOtherDetail, customerOtherDetailFromRepo);
             _customerOtherDetailRepository.Update(customerOtherDetailFromRepo);

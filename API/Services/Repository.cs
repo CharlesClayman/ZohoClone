@@ -9,60 +9,68 @@ namespace API.Services
     public class Repository<MT,T> : IRepository<MT,T> where MT : class
     { 
         private readonly DataContext _context;
-        private readonly DbSet<MT> _table;
+       
         public Repository(DataContext context)
         {
             _context = context;
-            _table = _context.Set<MT>();
         }
         public void Add(MT item)
         {
             if (item == null)
                 throw new ArgumentNullException(nameof(item));
-            _table.Add(item);
+           
+            _context.Set<MT>().Add(item);
+        }
+
+        public void AddRange(IEnumerable<MT> items)
+        {
+            if (items == null)
+                throw new ArgumentNullException(nameof(items));
+
+            _context.Set<MT>().AddRange(items);
         }
 
         public void Delete(MT item)
         {
             if (item == null)
                 throw new ArgumentNullException(nameof(item));
-            _table.Remove(item);
+
+            _context.Set<MT>().Remove(item);
         } 
 
         public async Task<bool> Exists(T id)
         {
-           var entity = await _table.FindAsync(id) ;
+           var entity = await _context.Set<MT>().FindAsync(id) ;
             if(entity == null)
                 return false;
             return true;
         }
 
-        public async Task<IEnumerable<MT>> GetAllAsync()
-        {
-            return await _table.ToListAsync();
-        }
+      
 
         public IQueryable<MT> GetAllAsQueryable()
         {
-            return _table.AsQueryable();
+            return _context.Set<MT>().AsQueryable();
+        }
+        public IQueryable<MT> GetSingleAsQueryable()
+        {
+            return _context.Set<MT>().AsQueryable();
         }
 
-        public async Task<MT> GetSingleAsync(T Id)
+        public async Task<MT> GetSingle(T Id)
         {
-            return await _table.FindAsync(Id);
+            return await _context.Set<MT>().FindAsync(Id);
         }
-        public async Task<MT> GetSingleAsQueryableAsync(Expression<Func<MT,bool>> idMatch, params Expression<Func<MT,Object>>[] includes)
-        {   
-            IQueryable<MT> query = _table.AsQueryable();
-            foreach(var include in includes)
-                query = query.Include(include);
-            return await query.FirstOrDefaultAsync(idMatch);
+       
+
+        public async Task SaveChangesAsync()
+        {
+           
+                await _context.SaveChangesAsync();
+           
         }
 
-        public async Task<bool> SaveChangesAsync()
-        {
-           return await _context.SaveChangesAsync() > 0;
-        }
+        
 
         public void Update(MT item)
         {
@@ -70,5 +78,26 @@ namespace API.Services
                 throw new ArgumentNullException(nameof(item));
             _context.Entry(item).State = EntityState.Modified;
         }
+
+        private bool disposed = false;
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!this.disposed)
+            {
+                if (disposing)
+                {
+                    _context.Dispose();
+                }
+            }
+            this.disposed = true;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
     }
 }

@@ -1,0 +1,18 @@
+.category-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-column-gap: 50px;
+    margin: 5px;
+  }
+
+  .form-container{
+    padding: 30px;
+  }
+
+  .save-cancel{
+    margin-top: 15px;
+}
+
+#required{
+    color: red;
+}

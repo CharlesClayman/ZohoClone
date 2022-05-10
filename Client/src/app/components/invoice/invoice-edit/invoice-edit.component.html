@@ -1,0 +1,194 @@
+<div class="container">
+  <div class="title">
+    <h3>Edit Invoice</h3>
+  </div>
+  <hr />
+  <form [formGroup]="invoiceForm" style="display: grid">
+    <div class="invoice">
+      <label id="required">Customer Name*</label>
+      <div class="wrapper">
+        <select class="form-select" formControlName="customerId">
+          <option [ngValue]="customer['id']" *ngFor="let customer of customers">
+            {{ customer["firstName"] }} {{ customer["lastName"] }}
+          </option>
+          <option value="configure">Create Customer</option>
+        </select>
+      </div>
+      <label id="required">Invoice#*</label>
+      <div class="wrapper">
+        <input
+          type="text"
+          class="form-control"
+          formControlName="invoiceNumber"
+        />
+      </div>
+      <label>Order Number</label>
+      <div class="wrapper">
+        <input type="text" class="form-control" formControlName="orderNumber" />
+      </div>
+      <label id="required">Invoice Date*</label>
+      <div class="wrapper">
+        <input
+          type="text"
+          formControlName="invoiceDate"
+          class="form-control"
+          bsDatepicker
+          [bsConfig]="{
+            isAnimated: true,
+            dateInputFormat: 'DD/MM/YYYY'
+          }"
+        />
+
+        <label>Payment terms</label>
+        <select
+          class="form-select form-select-sm mb-1"
+          formControlName="termsId"
+        >
+          <option [ngValue]="term['id']" *ngFor="let term of terms">
+            {{ term["termName"] }}
+          </option>
+          <option value="configure">Configure terms</option>
+        </select>
+        <label>Due Date</label>
+        <input
+          type="text"
+          formControlName="dueDate"
+          class="form-control"
+          bsDatepicker
+          [bsConfig]="{
+            isAnimated: true,
+            dateInputFormat: 'DD/MM/YYYY'
+          }"
+        />
+      </div>
+      <label>Salespersons</label>
+      <div class="wrapper">
+        <select class="form-select" formControlName="salesPersonId">
+          <option
+            [ngValue]="salesPerson['id']"
+            *ngFor="let salesPerson of salesPersons"
+          >
+            {{ salesPerson["name"] }}
+          </option>
+          <option value="configure">Configure Salesperson</option>
+        </select>
+      </div>
+      <label>Subject</label>
+      <div class="wrapper">
+        <textarea name="remark" formControlName="subject" rows="4" cols="10">
+        </textarea>
+      </div>
+    </div>
+    <label id="required">Item(s)*</label>
+    <hr />
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ITEM</th>
+          <th>DESCRIPTION</th>
+          <th>QUANTITY</th>
+          <th>RATE</th>
+          <th>TAX</th>
+          <th>AMOUNT</th>
+        </tr>
+      </thead>
+      <tbody formArrayName="items">
+        <tr *ngFor="let item of itemsFromInvoice.controls; let i = index">
+          <app-invoice-item
+            [item]="item"
+            [index]="i"
+            (amountEmitter)="onAmountChanged($event, i)"
+            (itemTaxValueEmitter)="onReceivingItemTaxAndValue($event, i)"
+          ></app-invoice-item>
+        </tr>
+      </tbody>
+    </table>
+    <div style="text-align: left">
+      <button class="btn btn-primary" (click)="addItem()">
+        Add another item
+      </button>
+    </div>
+    <div class="sub-section">
+      <div class="calc-info">
+        <label>Sub Total</label>
+        <span></span>
+        <label>{{ subTotal }}</label>
+        <ng-container *ngFor="let value of filteredTaxes">
+          <ng-container *ngIf="value.tax && value.value">
+            <label>{{ value?.tax }}</label>
+            <span></span>
+            <label>{{ value?.value }}</label>
+          </ng-container>
+        </ng-container>
+        <label>Discount</label>
+        <div class="input-group mb-3">
+          <input
+            type="number"
+            class="form-control"
+            formControlName="discount"
+          />
+          <input type="text" value="%" class="form-control" disabled="true" />
+        </div>
+        <label>{{ discount }}</label>
+        <label>Adjustment</label>
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" value="GHS" disabled="true" />
+          <input
+            type="text"
+            class="form-control"
+            formControlName="adjustments"
+          />
+        </div>
+        <label>{{ adjustment }}</label>
+
+        <label>Total(GHS)</label>
+        <span></span>
+        <label>{{ total }}</label>
+      </div>
+      <div class="customer-note">
+        <label>Customer Notes</label>
+        <textarea
+          name="remark"
+          formControlName="customerNotes"
+          rows="4"
+          cols="10"
+        >
+        </textarea>
+      </div>
+    </div>
+    <div
+      class="sub-section"
+      style="
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-column-gap: 5%;
+      "
+    >
+      <div class="terms-and-conditions">
+        <label>Terms & conditions</label>
+        <textarea formControlName="termsAndConditions" rows="4" cols="10">
+        </textarea>
+      </div>
+      <div class="file-upload">
+        <label for="formFile" class="form-label">Attach file to invoice</label>
+        <input
+          class="form-control"
+          type="file"
+          id="formFile"
+          formControlName="attachFile"
+        />
+      </div>
+    </div>
+    <div class="save">
+      <button
+        class="btn btn-primary"
+        style="margin-right: 20px"
+        (click)="updateInvoice()"
+        [disabled]="!invoiceFormIsValid()"
+      >
+        Save Changes
+      </button>
+    </div>
+  </form>
+</div>

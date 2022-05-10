@@ -17,6 +17,7 @@
           "Microsoft.EntityFrameworkCore.Tools": "6.0.1",
           "Microsoft.IdentityModel.Tokens": "6.15.1",
           "Microsoft.VisualStudio.Web.CodeGeneration.Design": "6.0.1",
+          "Newtonsoft.Json": "13.0.1",
           "Swashbuckle.AspNetCore": "6.2.3",
           "System.IdentityModel.Tokens.Jwt": "6.15.1"
         },

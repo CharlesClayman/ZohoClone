@@ -2,18 +2,16 @@
 
 namespace API.Entities
 {
-    public class Item
+    public class Item:BaseEntity
     {
-        public Guid Id { get; set; }
         public ItemType ItemType { get; set; }
         [Required]
         public string Name { get; set; }
         public string Unit { get; set; }
+        public string Currency { get; set; }
         public decimal SellingPrice { get; set; }
         public string  Description { get; set; }
-        public Guid? TaxId { get; set; }
-        public virtual Tax Tax { get; set; }
-        public virtual Invoice Invoice { get; set; }
+        public  ICollection<InvoiceItem> Invoice { get; set; } = new HashSet<InvoiceItem>();
     }
     public enum ItemType
     {

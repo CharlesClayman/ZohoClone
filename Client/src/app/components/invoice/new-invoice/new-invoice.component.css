@@ -1,0 +1,54 @@
+.invoice {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-column-gap: 5%;
+  grid-column-start: 1;
+  grid-row-gap: 20px;
+  margin-bottom: 20px;
+  background-color: #f4f6f4;
+  padding: 10px;
+}
+
+.wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-column-gap: 1%;
+}
+
+#required {
+  color: red;
+}
+
+.calc-info {
+  float: right;
+  padding: 20px;
+  background-color: azure;
+  width: 50%;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-column-gap: 1%;
+}
+.customer-note,
+.terms-and-conditions {
+  float: left;
+  display: grid;
+}
+
+.sub-section {
+  margin-top: 40px;
+  background-color: #f4f6f4;
+  padding: 10px;
+}
+
+.save {
+  margin-top: 40px;
+  margin-bottom: 50px;
+  margin-right: 20px;
+}
+
+.term-modal-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 10px;
+  margin: 5px;
+}

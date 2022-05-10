@@ -1,0 +1,46 @@
+<ng-template #template>
+  <ng-container [formGroup]="form">
+    <ng-container>
+      <td>
+        <select class="form-select" formControlName="itemId">
+          <option [ngValue]="item['id']" *ngFor="let item of items">
+            {{ item["name"] }}
+          </option>
+          <option value="configure">Create Item</option>
+        </select>
+      </td>
+      <td>
+        <input type="text" class="form-control" formControlName="description" />
+      </td>
+      <td>
+        <input type="text" class="form-control" formControlName="quantity" />
+      </td>
+      <td>
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="itemRate"
+          [ngModelOptions]="{ standalone: true }"
+          disabled="true"
+        />
+      </td>
+      <td>
+        <select class="form-select" formControlName="taxId">
+          <option [ngValue]="tax['id']" *ngFor="let tax of listOfTaxes">
+            {{ tax["taxName"] }}[{{ tax["taxRate"] }}%]
+          </option>
+          <option value="configure">Create Tax</option>
+        </select>
+      </td>
+      <td>
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="itemAmount"
+          [ngModelOptions]="{ standalone: true }"
+          disabled="true"
+        />
+      </td>
+    </ng-container>
+  </ng-container>
+</ng-template>

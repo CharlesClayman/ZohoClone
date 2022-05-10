@@ -15,6 +15,10 @@ export class AccountService {
 
   constructor(private http: HttpClient) {}
 
+  getCurrentUserInfo() {
+    return this.http.get(this.baseUrl + 'account/currentUserInfo');
+  }
+
   login(model: any) {
     return this.http.post<User>(this.baseUrl + 'account/login', model).pipe(
       map((response: User) => {

@@ -1,12 +1,14 @@
 import { Guid } from 'guid-typescript';
+import { Customer } from './customer';
 
-export interface Incomes {
+export interface Income {
   id: Guid;
-  customerId: Guid;
-  amountRecieved: Number;
+  customer: Customer;
+  currency: string;
+  amountReceived: Number;
   bankCharges: Number;
   paymentDate: Date;
-  paymentNumber: Number;
+  paymentNumber: string;
   paymentMode: string;
   referenceNumber: string;
   taxDeducted: TaxDeducted;

@@ -1,8 +1,10 @@
 ﻿using API.DTOs;
 using API.Entities;
+using API.Helpers;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
@@ -30,6 +32,7 @@ namespace API.Controllers
 
             return CreatedAtRoute(nameof(GetInvoice),new {invoiceId=invoiceEntity.Id},invoiceToReturn);
         }
+       
 
         [HttpGet]
         [Route("{invoiceId}",Name =nameof(GetInvoice))]
@@ -40,14 +43,48 @@ namespace API.Controllers
             {
                 return NotFound();
             }
-            var invoice = await _invoiceRepository.GetSingleAsync(invoiceId);
+            var invoice = await _invoiceRepository.GetSingleAsQueryable()
+                .Where(x => x.Id == invoiceId) 
+                .Where(x=>x.IsDeleted == false)
+                .Include(x=>x.Customer).ThenInclude(x=>x.OtherDetails)
+                .Include(x=>x.Terms)
+                .Include(x => x.SalesPerson)
+                .Include(x=>x.Items).ThenInclude(x=>x.Item)
+                .Include(x => x.Items).ThenInclude(x => x.Tax)
+                .FirstOrDefaultAsync();
+
             return Ok(_mapper.Map<InvoiceReturnDto>(invoice));
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetInvoices()
+        public async Task<IActionResult> GetInvoices([FromQuery] InvoiceQuery query)
         {
-            var invoices = await _invoiceRepository.GetAllAsync();
+            var queryable = _invoiceRepository.GetSingleAsQueryable()
+                .Include(x => x.Customer).ThenInclude(x => x.OtherDetails)
+                .Include(x => x.Terms)
+                .Include(x => x.SalesPerson)
+                .Include(x => x.Items).ThenInclude(x => x.Item)
+                .Include(x => x.Items).ThenInclude(x => x.Tax)
+                .Where(x => x.IsDeleted == false);
+
+
+            if (!string.IsNullOrEmpty(query.searchQuery))
+            {
+                queryable = queryable.Where(x =>
+                x.InvoiceDate.ToString().Contains(query.searchQuery) ||
+                x.InvoiceNumber.Contains(query.searchQuery) ||
+                x.OrderNumber.Contains(query.searchQuery) ||
+                x.Customer.FirstName.Contains(query.searchQuery) ||
+                x.Customer.LastName.Contains(query.searchQuery) ||
+                x.DueDate.ToString().Contains(query.searchQuery) ||
+                x.Total.ToString().Contains(query.searchQuery) ||
+                x.Currency.Contains(query.searchQuery)
+                );
+             
+            }
+
+            var invoices = await queryable.ToListAsync();
+
             if (invoices == null)
                 return NotFound();
             return Ok(_mapper.Map<IEnumerable<InvoiceReturnDto>>(invoices));
@@ -61,22 +98,31 @@ namespace API.Controllers
             {
                 NotFound();
             }
-            var invoiceEntity = await _invoiceRepository.GetSingleAsync(invoiceId);
-            _invoiceRepository.Delete(invoiceEntity);
+            var invoiceEntity = await _invoiceRepository.GetSingle(invoiceId);
+            // _invoiceRepository.Delete(invoiceEntity);
+            invoiceEntity.IsDeleted = true;
             await _invoiceRepository.SaveChangesAsync();
 
             return NoContent();
         }
 
+
         [HttpPut("{invoiceId}")]
-        public async Task<IActionResult> UpdateIncome(Guid invoiceId,InvoiceUpdateDto invoice)
+        public async Task<IActionResult> UpdateInvoice(Guid invoiceId,InvoiceUpdateDto invoice)
         {
             var invoiceExists = await _invoiceRepository.Exists(invoiceId);
             if (!invoiceExists)
             {
                 NotFound();
             }
-            var invoiceFromRepo = await _invoiceRepository.GetSingleAsync(invoiceId);
+            var invoiceFromRepo = await _invoiceRepository.GetAllAsQueryable()
+                 .Where(_x => _x.IsDeleted == false)
+                 .Where(x => x.Id == invoiceId)
+                 .Include(x => x.Items)
+                 .FirstOrDefaultAsync();
+
+
+
             _mapper.Map(invoice, invoiceFromRepo);
             _invoiceRepository.Update(invoiceFromRepo);
             await _invoiceRepository.SaveChangesAsync();

@@ -3,11 +3,7 @@
     <h3>New Customer</h3>
   </div>
   <hr />
-  <form
-    [formGroup]="customerForm"
-    #customer="ngForm"
-    (ngSubmit)="createCustomer()"
-  >
+  <form [formGroup]="customerForm" (ngSubmit)="createCustomer()">
     <div class="basic-info">
       <!--Customer Type-->
       <label>Customer Type</label>
@@ -132,13 +128,13 @@
             <div class="wrapper">
               <select
                 class="form-select form-select-sm mb-1"
-                formControlName="taxRate"
-                (ngModelChange)="openTaxModal($event, taxTemplate)"
+                formControlName="taxId"
+                (ngModelChange)="openModal($event)"
               >
-                <option [ngValue]="item['taxRate']" *ngFor="let item of taxes">
+                <option [ngValue]="item['id']" *ngFor="let item of taxes">
                   {{ item["taxName"] }}
                 </option>
-                <option value="configure">Create Tax</option>
+                <option value="Configure Tax">Create Tax</option>
               </select>
             </div>
             <!--Payment terms-->
@@ -146,13 +142,13 @@
             <div class="wrapper">
               <select
                 class="form-select form-select-sm mb-1"
-                formControlName="paymentTerms"
-                (ngModelChange)="openTermModal($event, termTemplate)"
+                formControlName="termsId"
+                (ngModelChange)="openModal($event)"
               >
-                <option [ngValue]="item" *ngFor="let item of termsList">
-                  {{ item }}
+                <option [ngValue]="item['id']" *ngFor="let item of terms">
+                  {{ item["termName"] }}
                 </option>
-                <option value="configure">Configure terms</option>
+                <option value="Configure Term">Configure terms</option>
               </select>
             </div>
             <!--Enable Portal For Customer-->
@@ -416,113 +412,11 @@
       >
         Save
       </button>
-      <button type="button" class="btn">Cancel</button>
+      <button type="button" class="btn" (click)="cancelNewCustomer()">
+        Cancel
+      </button>
     </div>
     <br /><br />
   </form>
 </div>
 
-<ng-template #taxTemplate>
-  <div class="modal-header">
-    <h4 class="modal-title pull-left">New Tax</h4>
-  </div>
-  <div class="modal-body">
-    <form [formGroup]="taxForm" (submit)="createTax()">
-      <div class="tax-modal-container">
-        <label style="color: red">Tax Name*</label>
-        <input
-          type="text"
-          class="form-control form-control-sm"
-          formControlName="taxName"
-          placeholder="VAT"
-          style="margin-right: 5px"
-        />
-        <label style="color: red">Rate(%)*</label>
-        <input
-          type="number"
-          class="form-control form-control-sm"
-          formControlName="taxRate"
-          placeholder="0"
-          style="margin-right: 5px"
-        />
-        <div style="margin-top: 5px">
-          <label>This tax is a compound tax?</label>
-          <input
-            type="checkbox"
-            formControlName="compoundTax"
-            [value]="true"
-            style="margin-left: 10px"
-          />
-        </div>
-      </div>
-    </form>
-  </div>
-  <div class="modal-footer">
-    <button
-      type="submit"
-      class="btn btn-primary"
-      (click)="createTax()"
-      [disabled]="!taxFormValid()"
-    >
-      Save
-    </button>
-    <button type="button" class="btn btn-default" (click)="closeModal()">
-      Close
-    </button>
-  </div>
-</ng-template>
-
-<ng-template #termTemplate>
-  <div class="modal-header">
-    <h4 class="modal-title pull-left">New Term</h4>
-  </div>
-  <div class="modal-body">
-    <form [formGroup]="termForm" (submit)="createTerm()">
-      <div class="term-modal-container">
-        <label style="color: red">Term Name*</label>
-        <label style="color: red">Number Of Days*</label>
-        <input
-          type="text"
-          class="form-control form-control-sm"
-          placeholder="Net 30"
-          style="margin-left: 5px"
-          disabled
-        />
-        <input
-          type="text"
-          class="form-control form-control-sm"
-          placeholder="30"
-          style="margin-right: 5px"
-          disabled
-        />
-        <input
-          type="text"
-          class="form-control form-control-sm"
-          formControlName="termName"
-          placeholder="Net 0"
-          style="margin-left: 5px"
-        />
-        <input
-          type="number"
-          class="form-control form-control-sm"
-          formControlName="termDays"
-          placeholder="0"
-          style="margin-right: 5px"
-        />
-      </div>
-    </form>
-  </div>
-  <div class="modal-footer">
-    <button
-      type="submit"
-      class="btn btn-primary"
-      (click)="createTerm()"
-      [disabled]="!termFormValid()"
-    >
-      Save
-    </button>
-    <button type="button" class="btn btn-default" (click)="closeModal()">
-      Close
-    </button>
-  </div>
-</ng-template>

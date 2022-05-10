@@ -37,7 +37,7 @@
 
     <div class="form-floating mt-3 mb-3">
       <input
-        type="text"
+        type="password"
         class="form-control"
         formControlName="password"
         placeholder="Enter password"
@@ -53,6 +53,13 @@
         placeholder="Company Name"
       />
       <label for="comapanyname">Company Name</label>
+    </div>
+    <div class="form-floating mt-3 mb-3">
+      <input
+        type="file"
+        class="form-control"
+        (change)="onFileSelected($event)"
+      />
     </div>
     <div class="btn-container">
       <button

@@ -15,7 +15,6 @@ namespace API.Helpers
                 .ForMember(dest =>dest.UserName, opt=>opt.MapFrom(src=>src.FirstName));
 
             CreateMap<ItemCreationDto,Item>();
-            CreateMap<Income, IncomeCreationDto>();
             CreateMap<IncomeCreationDto,Income>();
             CreateMap<ExpenseCreationDto,Expenses>();
             CreateMap<CategoryCreationDto,Category>();
@@ -42,7 +41,6 @@ namespace API.Helpers
             CreateMap<Invoice, InvoiceReturnDto>();
             CreateMap<IEnumerable<Invoice>, InvoiceReturnDto>();
             CreateMap<Income, IncomeReturnDto>();
-            CreateMap<IEnumerable<Income>, IncomeReturnDto>();
             CreateMap<Expenses,ExpenseReturnDto>();
             CreateMap<Category, CategoryReturnDto>();
             CreateMap<IEnumerable<Category>,CategoryReturnDto>();
@@ -62,7 +60,10 @@ namespace API.Helpers
 
             CreateMap<CustomerContactPerson, CustomerContactReturnDto>();
 
-        
+            CreateMap<InvoiceItemCreationDto, InvoiceItem>();
+            CreateMap<InvoiceItem, InvoiceItemReturnDto>();
+            CreateMap<AppUser, CurrentUserReturnDto>().ForMember(dest => dest.FullName, src => src.MapFrom(n => n.FirstName +" "+ n.LastName));
+         
         }
 
     }

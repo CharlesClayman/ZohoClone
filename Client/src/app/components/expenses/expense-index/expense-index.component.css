@@ -1,0 +1,12 @@
+tr:hover {
+  background-color: #ddd;
+}
+[data-href] {
+  cursor: pointer;
+}
+
+.details-content {
+  display: Grid;
+  grid-template-columns: auto 1fr;
+  grid-column-gap: 10px;
+}

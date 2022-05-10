@@ -8,7 +8,7 @@ namespace API.DTOs
         [Required]
         public string TaxName { get; set; }
         [Required]
-        public int TaxRate { get; set; }
+        public decimal TaxRate { get; set; }
         public bool CompoundTax { get; set; }
        
     }

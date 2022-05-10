@@ -1,0 +1,36 @@
+<div class="form-container">
+  <h4>New Salesperson</h4>
+  <hr />
+  <form [formGroup]="salespersonForm" (submit)="createSalesPerson()">
+    <div class="fields-container">
+      <label style="color: red">Name*</label>
+      <label style="color: red">Email*</label>
+      <input
+        type="text"
+        class="form-control form-control-sm"
+        formControlName="name"
+        style="margin-left: 5px"
+      />
+      <input
+        type="text"
+        class="form-control form-control-sm"
+        formControlName="email"
+        style="margin-right: 5px"
+      />
+    </div>
+  </form>
+
+  <div class="save-cancel">
+    <button
+      type="submit"
+      class="btn btn-primary"
+      (click)="createSalesPerson()"
+      [disabled]="!salesPersonFormValid()"
+    >
+      Save
+    </button>
+    <button type="button" class="btn btn-default" (click)="close()">
+      Close
+    </button>
+  </div>
+</div>

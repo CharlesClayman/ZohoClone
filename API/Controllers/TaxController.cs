@@ -1,8 +1,10 @@
 ﻿using API.DTOs;
 using API.Entities;
+using API.Helpers;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
@@ -38,15 +40,29 @@ namespace API.Controllers
             {
                 return NotFound();
             }
-            var tax = await _taxRepository.GetSingleAsync(taxId);
+            var tax = await _taxRepository.GetSingleAsQueryable()
+                .Where(x => x.IsDeleted == false)
+                .Where(x => x.Id == taxId)
+                .FirstOrDefaultAsync(); 
 
             return Ok(_mapper.Map<TaxReturnDto>(tax));
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetTaxes()
+        public async Task<IActionResult> GetTaxes([FromQuery] TaxQuery query)
         {
-            var taxes = await _taxRepository.GetAllAsync();
+            var queryable = _taxRepository.GetAllAsQueryable()
+                .Where(x => x.IsDeleted == false);
+
+            if (!string.IsNullOrEmpty(query.searchQuery))
+            {
+                queryable = queryable.Where(x =>
+                x.TaxName.Contains(query.searchQuery)||
+                x.TaxRate.ToString().Contains(query.searchQuery)
+                ) ;
+            }
+
+            var taxes = await queryable.ToListAsync();
             if (taxes == null)
                 return NotFound();
             return Ok(_mapper.Map<List<TaxReturnDto>>(taxes));
@@ -62,8 +78,9 @@ namespace API.Controllers
                 return NotFound();
             }
 
-            var taxEntity = await _taxRepository.GetSingleAsync(taxId);
-            _taxRepository.Delete(taxEntity);
+            var taxEntity = await _taxRepository.GetSingle(taxId);
+            // _taxRepository.Delete(taxEntity);
+            taxEntity.IsDeleted = true;
             await _taxRepository.SaveChangesAsync();
 
             return NoContent();
@@ -78,8 +95,8 @@ namespace API.Controllers
                 return NotFound();
             }
 
-            var taxFromRepo = await _taxRepository.GetSingleAsync(taxId);
-
+            var taxFromRepo = await _taxRepository.GetSingle(taxId);
+               
             _mapper.Map(tax, taxFromRepo);
 
             _taxRepository.Update(taxFromRepo);

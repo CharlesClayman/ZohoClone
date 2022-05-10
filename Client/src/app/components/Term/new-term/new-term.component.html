@@ -1,0 +1,52 @@
+<div class="form-container">
+  <h3>New Term</h3>
+  <hr />
+  <form [formGroup]="termForm" (submit)="createTerm()">
+    <div class="term-fields-container">
+      <label style="color: red">Term Name*</label>
+      <label style="color: red">Number Of Days*</label>
+      <input
+        type="text"
+        class="form-control form-control-sm"
+        placeholder="Net 30"
+        style="margin-left: 5px"
+        disabled
+      />
+      <input
+        type="text"
+        class="form-control form-control-sm"
+        placeholder="30"
+        style="margin-right: 5px"
+        disabled
+      />
+      <input
+        type="text"
+        class="form-control form-control-sm"
+        formControlName="termName"
+        placeholder="Net 0"
+        style="margin-left: 5px"
+      />
+      <input
+        type="number"
+        class="form-control form-control-sm"
+        formControlName="termDays"
+        placeholder="0"
+        style="margin-right: 5px"
+      />
+    </div>
+  </form>
+
+  <div class="save-cancel">
+    <button
+      type="submit"
+      class="btn btn-primary"
+      (click)="createTerm()"
+      [disabled]="!termFormValid()"
+    >
+      Save
+    </button>
+    <button type="button" class="btn btn-default" (click)="close()">
+      Close
+    </button>
+  </div>
+</div>

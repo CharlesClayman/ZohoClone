@@ -1,0 +1,108 @@
+<div class="container">
+  <div class="title">
+    <h3>Edit Income</h3>
+  </div>
+  <hr />
+  <div class="container">
+    <div>
+      <form class="basic-income" [formGroup]="incomeForm">
+        <label id="required">Customer Name*</label>
+        <div class="wrapper">
+          <select class="form-select" formControlName="customerId" (ngModelChange)="openModal($event)">
+            <option
+              [ngValue]="customer['id']"
+              *ngFor="let customer of customers"
+            >
+              {{ customer["firstName"] }} {{ customer["lastName"] }}
+            </option>
+            <option value="Configure Customer">Create Customer</option>
+          </select>
+        </div>
+        <label id="required">Amount Received*</label>
+        <div class="wrapper">
+          <div class="input-group mb-3">
+            <select
+              class="form-select"
+              id="currency"
+              formControlName="currency"
+            >
+              <option [ngValue]="item" *ngFor="let item of currencies">
+                {{ item }}
+              </option>
+            </select>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="amountReceived"
+            />
+          </div>
+        </div>
+        <label>Bank Charges(if any)</label>
+        <div class="wrapper">
+          <input
+            type="text"
+            class="form-control"
+            formControlName="bankCharges"
+          />
+        </div>
+        <label id="required">Payment Date*</label>
+        <div class="wrapper">
+          <input
+            type="text"
+            formControlName="paymentDate"
+            class="form-control"
+            bsDatepicker
+            [bsConfig]="{
+              isAnimated: true,
+              dateInputFormat: 'DD/MM/YYYY'
+            }"
+          />
+        </div>
+        <label id="required">Payment #*</label>
+        <div class="wrapper">
+          <input
+            type="text"
+            class="form-control"
+            formControlName="paymentNumber"
+          />
+        </div>
+        <label>Payment Mode</label>
+        <div class="wrapper">
+          <select class="form-select" formControlName="paymentMode">
+            <option *ngFor="let mode of modesOfPayment" [ngValue]="mode">
+              {{ mode }}
+            </option>
+          </select>
+        </div>
+        <label>Reference#</label>
+        <div class="wrapper">
+          <input
+            type="text"
+            class="form-control"
+            formControlName="referenceNumber"
+          />
+        </div>
+        <label>Tax deducted?</label>
+        <div class="radioWrapperr">
+          <input
+            type="radio"
+            formControlName="taxDeducted"
+            [value]="taxed.No"
+          /><label style="margin-right: 10px">No</label>
+          <input
+            type="radio"
+            formControlName="taxDeducted"
+            [value]="taxed.Yes"
+          /><label>Yes</label>
+        </div>
+      </form>
+      <button
+        class="btn btn-primary"
+        (click)="updateIncome()"
+        [disabled]="!incomeFormIsValid()"
+      >
+        Save Changes
+      </button>
+    </div>
+  </div>
+</div>

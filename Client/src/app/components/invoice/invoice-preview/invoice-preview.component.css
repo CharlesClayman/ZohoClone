@@ -1,0 +1,18 @@
+.card {
+  /* padding: 20px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2); */
+  border: none !important;
+}
+
+#exterior {
+  padding: 20px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+
+.section {
+  margin-right: 100px;
+  margin-left: 100px;
+}
+.container {
+  padding: 10px;
+}

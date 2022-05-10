@@ -1,191 +1,150 @@
-import { Component, OnInit, TemplateRef } from '@angular/core';
+import { Component, OnDestroy, OnInit, TemplateRef } from '@angular/core';
 import * as currencies from '../../../_data/currencies.json';
 import * as countries from '../../../_data/countries.json';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import { Customer, CustomerType, Salutation } from 'src/app/_model';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
-import { EnablePortal } from 'src/app/_model/customerOtherDetails';
-import { Terms } from 'src/app/_model/terms';
+import {
+  EnablePortal,
+  OtherDetails,
+} from 'src/app/_model/customerOtherDetails';
+import { Term } from 'src/app/_model/term';
 import { CustomersService } from 'src/app/_services/customers.service';
 import { TermsService } from 'src/app/_services/terms.service';
 import { TaxService } from 'src/app/_services/tax.service';
 import { ToastrService } from 'ngx-toastr';
 import { AddressType } from 'src/app/_model/address';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { ModalService } from 'src/app/_services/modal.service';
+import { NewTaxComponent } from '../../Tax/new-tax/new-tax.component';
+import { NewTermComponent } from '../../Term/new-term/new-term.component';
+import { SharedService } from 'src/app/_services/shared.service';
 
 @Component({
   selector: 'app-customer-edit',
   templateUrl: './customer-edit.component.html',
   styleUrls: ['./customer-edit.component.css'],
 })
-export class CustomerEditComponent implements OnInit {
+export class CustomerEditComponent implements OnInit, OnDestroy {
   customer: Customer = <Customer>{};
-  modalRef?: BsModalRef;
-  terms: Terms[] = [];
+  otherDetail: OtherDetails = <OtherDetails>{};
+  terms: any[] = [];
   termsList: string[] = [];
   taxes: any[] = [];
   salutation: typeof Salutation = Salutation;
   customerType: typeof CustomerType = CustomerType;
   enablePortal: typeof EnablePortal = EnablePortal;
-
-  customerForm = new FormGroup({
-    firstName: new FormControl('', [Validators.required]),
-    lastName: new FormControl('', [Validators.required]),
-    companyName: new FormControl(),
-    displayName: new FormControl('', [Validators.required]),
-    email: new FormControl(),
-    website: new FormControl(),
-    workPhone: new FormControl(),
-    mobile: new FormControl(),
-    customerType: new FormControl(CustomerType.Business),
-    salutation: new FormControl(this.salutation.Mr),
-    otherDetails: new FormGroup({
-      currency: new FormControl(this.currencies[0], [Validators.required]),
-      taxRate: new FormControl(0),
-      website: new FormControl(),
-      paymentTerms: new FormControl(''),
-      enablePortal: new FormControl(this.enablePortal.No),
-      facebook: new FormControl(),
-      twitter: new FormControl(),
-    }),
-    address: new FormArray([
-      new FormGroup({
-        addressType: new FormControl(),
-        attention: new FormControl(),
-        countryOrRegion: new FormControl(),
-        streetOneAddress: new FormControl(),
-        streetTwoAddress: new FormControl(),
-        city: new FormControl(),
-        state: new FormControl(),
-        zipCode: new FormControl(),
-        phone: new FormControl(),
-        fax: new FormControl(),
-      }),
-      new FormGroup({
-        addressType: new FormControl(),
-        attention: new FormControl(),
-        countryOrRegion: new FormControl(),
-        streetOneAddress: new FormControl(),
-        streetTwoAddress: new FormControl(),
-        city: new FormControl(),
-        state: new FormControl(),
-        zipCode: new FormControl(),
-        phone: new FormControl(),
-        fax: new FormControl(),
-      }),
-    ]),
-
-    contactPersons: new FormArray([
-      new FormGroup({
-        salutation: new FormControl(this.salutation.Mr),
-        firstName: new FormControl(),
-        lastName: new FormControl(),
-        email: new FormControl(),
-        workPhone: new FormControl(),
-        mobile: new FormControl(),
-      }),
-    ]),
-    remarks: new FormControl(),
-  });
-
-  taxForm = new FormGroup({
-    taxName: new FormControl('', [Validators.required]),
-    taxRate: new FormControl(null, [Validators.required]),
-    compoundTax: new FormControl(false),
-  });
-
-  termForm = new FormGroup({
-    termName: new FormControl('', [Validators.required]),
-    termDays: new FormControl(null, [Validators.required]),
-    customized: new FormControl(true),
-  });
+  customerId: any;
+  updateCustomerSubs: Subscription | undefined;
+  getCustomerSubs: Subscription | undefined;
+  getTaxesSubs: Subscription | undefined;
+  getTermsSubs: Subscription | undefined;
+  getTermsSharedSubs: Subscription | undefined;
+  getTaxesSharedSubs: Subscription | undefined;
+  customerForm!: FormGroup;
 
   constructor(
     private customersService: CustomersService,
     private termsService: TermsService,
-    private modalService: BsModalService,
+    private modalService: ModalService,
     private taxService: TaxService,
     private route: ActivatedRoute,
-    private toastr: ToastrService
-  ) {}
+    private toastr: ToastrService,
+    private router: Router,
+    private sharedService: SharedService
+  ) {
+    this.customerId = this.route.snapshot.params['id'];
+
+    this.customerForm = new FormGroup({
+      firstName: new FormControl('', [Validators.required]),
+      lastName: new FormControl('', [Validators.required]),
+      companyName: new FormControl(),
+      displayName: new FormControl('', [Validators.required]),
+      email: new FormControl(),
+      website: new FormControl(),
+      workPhone: new FormControl(),
+      mobile: new FormControl(),
+      customerType: new FormControl(CustomerType.Business),
+      salutation: new FormControl(this.salutation.Mr),
+      otherDetails: new FormGroup({
+        currency: new FormControl(this.currencies[0], [Validators.required]),
+        taxId: new FormControl(null),
+        termsId: new FormControl(null),
+        enablePortal: new FormControl(this.enablePortal.No),
+        facebook: new FormControl(),
+        twitter: new FormControl(),
+      }),
+      address: new FormArray([
+        new FormGroup({
+          addressType: new FormControl(),
+          attention: new FormControl(),
+          countryOrRegion: new FormControl(),
+          streetOneAddress: new FormControl(),
+          streetTwoAddress: new FormControl(),
+          city: new FormControl(),
+          state: new FormControl(),
+          zipCode: new FormControl(),
+          phone: new FormControl(),
+          fax: new FormControl(),
+        }),
+        new FormGroup({
+          addressType: new FormControl(),
+          attention: new FormControl(),
+          countryOrRegion: new FormControl(),
+          streetOneAddress: new FormControl(),
+          streetTwoAddress: new FormControl(),
+          city: new FormControl(),
+          state: new FormControl(),
+          zipCode: new FormControl(),
+          phone: new FormControl(),
+          fax: new FormControl(),
+        }),
+      ]),
+
+      contactPersons: new FormArray([
+        new FormGroup({
+          salutation: new FormControl(this.salutation.Mr),
+          firstName: new FormControl(),
+          lastName: new FormControl(),
+          email: new FormControl(),
+          workPhone: new FormControl(),
+          mobile: new FormControl(),
+        }),
+      ]),
+      remarks: new FormControl(),
+    });
+
+    this.getTaxesSharedSubs = this.sharedService
+      .setGetTaxes()
+      .subscribe(() => this.getTaxes());
+    this.getTermsSharedSubs = this.sharedService
+      .setGetTerms()
+      .subscribe(() => this.getTerms());
+  }
 
   ngOnInit(): void {
     this.getCustomerDetails();
-    this.loadTerms();
-    this.loadTaxes();
+    this.getTerms();
+    this.getTaxes();
   }
+
   get customerFormControl() {
     return this.customerForm.controls;
   }
-  openTaxModal(event: any, template: TemplateRef<any>) {
-    if (event === 'configure') {
-      this.modalRef = this.modalService.show(template);
-    }
-  }
 
-  taxFormValid(): boolean {
-    if (this.taxForm.valid) {
-      return true;
-    } else {
-      return false;
+  openModal(event: any) {
+    if (event === 'Configure Tax') {
+      this.modalService.openModal(NewTaxComponent);
+    } else if (event === 'Configure Term') {
+      this.modalService.openModal(NewTermComponent);
     }
-  }
-  createTax() {
-    const taxFormValue: Terms = this.taxForm.value;
-
-    if (this.taxForm.valid) {
-      this.taxService.createTax(taxFormValue).subscribe(
-        (response) => {
-          this.closeModal();
-          this.loadTaxes();
-          console.log(response);
-        },
-        (error) => {
-          this.toastr.error(error.message);
-          console.log(error);
-        }
-      );
-    }
-  }
-
-  openTermModal(event: any, template: TemplateRef<any>) {
-    if (event === 'configure') {
-      this.modalRef = this.modalService.show(template);
-    }
-  }
-  createTerm() {
-    const termFormValue: Terms = this.termForm.value;
-
-    if (this.termForm.valid) {
-      this.termsService.createTerm(termFormValue).subscribe(
-        (response) => {
-          this.closeModal();
-          this.loadTerms();
-          console.log(response);
-        },
-        (error) => {
-          this.toastr.error(error.message);
-          console.log(error);
-        }
-      );
-    }
-  }
-
-  termFormValid(): boolean {
-    if (this.termForm.valid) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  closeModal() {
-    this.modalRef?.hide();
   }
 
   get contactPersons(): FormArray {
     return this.customerForm.get('contactPersons') as FormArray;
   }
+
   addContactPerson() {
     this.contactPersons.push(
       new FormGroup({
@@ -259,23 +218,25 @@ export class CustomerEditComponent implements OnInit {
   salutationIdentifier(index: number, salutationEnums: any) {
     return salutationEnums.label;
   }
-  loadTaxes() {
-    this.taxService.getTaxes().subscribe((response: any) => {
-      console.log(response);
-      Object.values(response).map((val: any) => {
-        this.taxes.push(val);
+
+  getTaxes() {
+    this.taxes = [];
+    this.getTaxesSubs = this.taxService
+      .getTaxes()
+      .subscribe((response: any) => {
+        Object.values(response).map((val: any) => {
+          this.taxes.push(val);
+        });
       });
-    });
   }
 
-  loadTerms() {
-    this.termsService.getTerms().subscribe((response: any) => {
-      this.terms = response;
-      Object.values(this.terms).map((values) =>
-        this.termsList.push(values.termName)
-      );
-      return this.termsList;
-    });
+  getTerms() {
+    this.terms = [];
+    this.getTermsSubs = this.termsService
+      .getTerms()
+      .subscribe((response: any) => {
+        Object.values(response).map((value: any) => this.terms.push(value));
+      });
   }
 
   customerFormValid(): boolean {
@@ -287,11 +248,12 @@ export class CustomerEditComponent implements OnInit {
   }
 
   getCustomerDetails() {
-    return this.customersService
-      .getSingleCustomer(this.route.snapshot.params['id'])
+    this.getCustomerSubs = this.customersService
+      .getSingleCustomer(this.customerId)
       .subscribe(
         (response: any) => {
           this.customer = response as Customer;
+          this.otherDetail = this.customer.otherDetails as OtherDetails;
           if (this.customer) {
             this.customerForm.patchValue({
               customerType: this.customer?.customerType,
@@ -304,7 +266,14 @@ export class CustomerEditComponent implements OnInit {
               workPhone: this.customer?.workPhone,
               mobile: this.customer?.mobilePhone,
               website: this.customer?.website,
-              otherDetails: this.customer?.otherDetails,
+              otherDetails: {
+                currency: this.otherDetail?.currency,
+                taxId: this.otherDetail?.tax?.id,
+                termsId: this.otherDetail?.terms?.id,
+                enablePortal: this.otherDetail?.enablePortal,
+                facebook: this.otherDetail?.facebook,
+                twitter: this.otherDetail?.twitter,
+              },
               address: this.customer?.address,
               contactPersons: this.customer?.contactPersons,
               remarks: this.customer?.remarks,
@@ -312,7 +281,7 @@ export class CustomerEditComponent implements OnInit {
           }
         },
         (error: any) => {
-          console.log(error);
+          this.toastr.error(error.message);
         }
       );
   }
@@ -324,20 +293,28 @@ export class CustomerEditComponent implements OnInit {
 
     billingAddress.addressType = AddressType.BillingAddress;
     shippingAddress.addressType = AddressType.ShippingAddress;
+
     if (this.customerForm.valid) {
-      console.log('valid');
-      const customerId = this.route.snapshot.params['id'];
-      this.customersService
-        .updateCustomer(customerId, customerFormValue)
+      this.updateCustomerSubs = this.customersService
+        .updateCustomer(this.customerId, this.customerForm.value)
         .subscribe(
           (response: any) => {
-            console.log(response);
+            this.toastr.success('Update successful');
+            this.router.navigateByUrl('/customers');
           },
           (error: any) => {
             this.toastr.error(error.message);
-            console.error(error);
           }
         );
     }
+  }
+
+  ngOnDestroy(): void {
+    this.updateCustomerSubs?.unsubscribe();
+    this.getCustomerSubs?.unsubscribe();
+    this.getTaxesSubs?.unsubscribe();
+    this.getTermsSubs?.unsubscribe();
+    this.getTermsSharedSubs?.unsubscribe();
+    this.getTaxesSharedSubs?.unsubscribe();
   }
 }

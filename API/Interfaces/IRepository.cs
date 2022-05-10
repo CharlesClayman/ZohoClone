@@ -5,13 +5,13 @@ namespace API.Interfaces
     public interface IRepository<MT,T>
     {
         void Add(MT item);
+        void AddRange(IEnumerable<MT> items);
         Task<bool> Exists(T id);
-        Task<MT> GetSingleAsync(T Id);
-        Task<IEnumerable<MT>> GetAllAsync();
+        Task<MT> GetSingle(T Id);
         IQueryable<MT> GetAllAsQueryable();
+        IQueryable<MT> GetSingleAsQueryable();
         void Update(MT item);
         void Delete(MT item);
-        Task<bool> SaveChangesAsync();
-        Task<MT> GetSingleAsQueryableAsync(Expression<Func<MT, bool>> idMatch, params Expression<Func<MT, Object>>[] includes);
+        Task SaveChangesAsync();
     }
 }

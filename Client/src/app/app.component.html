@@ -1,19 +1,27 @@
-
-   <app-nav ></app-nav>
-  <ng-sidebar-container>
-    <ng-sidebar [opened]="$any(sharedService. sidebarToggle$ | async)">
-      <ul class="menu">
-        <li><a routerLink="/customers" (click)="toggleSidebar()" > Customers</a></li>
-        <li><a routerLink="/items" (click)="toggleSidebar()" > Items</a></li>
-        <li><a routerLink="/invoices" (click)="toggleSidebar()" > Invoices</a></li>
-        <li><a routerLink="/incomes" (click)="toggleSidebar()"> Income</a></li>
-        <li><a routerLink="/expenses" (click)="toggleSidebar()"> Expenses</a></li>
-      </ul>
-    </ng-sidebar>
-    <div ng-sidebar-content>
-        <router-outlet></router-outlet>
-    </div>
+<app-nav></app-nav>
+<ng-sidebar-container>
+  <ng-sidebar [opened]="$any(sharedService.sidebarToggle$ | async)">
+    <ul class="menu">
+      <li>
+        <a routerLink="/customers" (click)="toggleSidebar()"> Customers</a>
+      </li>
+      <li><a routerLink="/items" (click)="toggleSidebar()"> Items</a></li>
+      <li><a routerLink="/invoices" (click)="toggleSidebar()"> Invoices</a></li>
+      <li><a routerLink="/incomes" (click)="toggleSidebar()"> Income</a></li>
+      <li><a routerLink="/expenses" (click)="toggleSidebar()"> Expenses</a></li>
+      <li><a routerLink="/taxes" (click)="toggleSidebar()"> Taxes</a></li>
+      <li><a routerLink="/terms" (click)="toggleSidebar()"> Terms</a></li>
+      <li>
+        <a routerLink="/salespersons" (click)="toggleSidebar()">
+          Salespersons</a
+        >
+      </li>
+      <li>
+        <a routerLink="/categories" (click)="toggleSidebar()"> Categories</a>
+      </li>
+    </ul>
+  </ng-sidebar>
+  <div ng-sidebar-content>
+    <router-outlet></router-outlet>
+  </div>
 </ng-sidebar-container>
-
-    
-

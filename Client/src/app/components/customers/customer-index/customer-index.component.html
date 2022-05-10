@@ -11,83 +11,75 @@
   </div>
   <hr />
 
-  <table *ngIf="customers.length > 0">
+  <table class="table" *ngIf="customers.length > 0">
     <tr>
       <th>NAME</th>
       <th>COMPANY NAME</th>
       <th>EMAIL</th>
       <th>WORK PHONE</th>
+      <th>ACTION</th>
     </tr>
-    <tr
-      class="clickable"
-      routerLink="/customers/{{ customer['id'] }}"
-      *ngFor="let customer of customers"
-    >
+    <tr *ngFor="let customer of customers">
       <td>{{ customer["firstName"] + " " + customer["lastName"] }}</td>
       <td>{{ customer["companyName"] }}</td>
       <td>{{ customer["email"] }}</td>
       <td>{{ customer["workPhone"] }}</td>
+      <td>
+        <div class="btn-group" dropdown>
+          <button
+            id="button-basic"
+            dropdownToggle
+            type="button"
+            class="btn btn-primary dropdown-toggle"
+            aria-controls="dropdown-basic"
+          >
+            <span class="caret"></span>
+          </button>
+          <ul
+            id="dropdown-basic"
+            *dropdownMenu
+            class="dropdown-menu"
+            role="menu"
+            aria-labelledby="button-basic"
+          >
+            <li role="menuitem">
+              <a
+                class="dropdown-item"
+                routerLink="/customers/{{ customer['id'] }}"
+                >View Details</a
+              >
+            </li>
+            <li class="divider dropdown-divider"></li>
+            <li role="menuitem">
+              <a
+                class="dropdown-item"
+                routerLink="/customers/{{ customer['id'] }}/edit"
+                >Edit</a
+              >
+            </li>
+            <li class="divider dropdown-divider"></li>
+            <li role="menuitem">
+              <a
+                class="dropdown-item"
+                (click)="openModal(customer, deleteModal)"
+                >Delete</a
+              >
+            </li>
+          </ul>
+        </div>
+      </td>
     </tr>
   </table>
 </div>
 
-<ng-template #customerDetail>
-  <div class="row">
-    <div class="col-4">
-      <div class="card">
-        <img
-          src="{{ '.assets/user.png' }}"
-          alt=""
-          class="card-img-top img-thumbnail"
-        />
-        <div class="card-body">
-          <div>
-            <strong>Location:</strong>
-            <p>/p></p>
-          </div>
-
-          <div>
-            <strong>Age:</strong>
-            <p></p>
-          </div>
-          <div>
-            <strong>Last Active:</strong>
-            <p></p>
-          </div>
-          <div>
-            <strong>Member since:</strong>
-            <p></p>
-          </div>
-        </div>
-        <div class="card-footer">
-          <div class="btn-group d-flex">
-            <button class="btn btn-primary">Like</button>
-            <button class="btn btn-success">Message</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-8">
-      <tabset class="member-tabset">
-        <tab heading="About">
-          <h4>Description</h4>
-          <p></p>
-          <h4>Looking for</h4>
-          <p></p>
-        </tab>
-        <tab heading="Interests">
-          <h4>Interests</h4>
-          <p></p>
-        </tab>
-
-        <tab heading="Photos">
-          <p>Photos will go here</p>
-        </tab>
-        <tab heading="Messages">
-          <p>Messages will go here</p>
-        </tab>
-      </tabset>
-    </div>
+<ng-template #deleteModal>
+  <div class="modal-body text-center">
+    <p>Do you want to delete?</p>
+    <button type="button" class="btn btn-default" (click)="deleteCustomer()">
+      Yes
+    </button>
+    <button type="button" class="btn btn-primary" (click)="closeModal()">
+      No
+    </button>
   </div>
 </ng-template>

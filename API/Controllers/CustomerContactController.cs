@@ -3,6 +3,7 @@ using API.Entities;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
@@ -40,7 +41,9 @@ namespace API.Controllers
             {
                 return NotFound();
             }
-            var customerContact = await _customerContactRepository.GetSingleAsync(customerContactId);
+            var customerContact = await _customerContactRepository.GetSingleAsQueryable()
+                .Where(x=>x.IsDeleted == false)
+                .FirstOrDefaultAsync();
 
             return Ok(_mapper.Map<CustomerContactReturnDto>(customerContact));
         }
@@ -48,7 +51,10 @@ namespace API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCustomerContacts()
         {
-            var customerContacts = await _customerContactRepository.GetAllAsync();
+            var customerContacts = await _customerContactRepository.GetAllAsQueryable()
+                .Where(x=>x.IsDeleted == false)
+                .ToListAsync();
+
             if (customerContacts == null)
                 return NotFound();
 
@@ -63,8 +69,9 @@ namespace API.Controllers
             {
                 NotFound();
             }
-            var customerContactEntity = await _customerContactRepository.GetSingleAsync(customerContactId);
-            _customerContactRepository.Delete(customerContactEntity);
+            var customerContactEntity = await _customerContactRepository.GetSingle(customerContactId);
+            //_customerContactRepository.Delete(customerContactEntity);
+            customerContactEntity.IsDeleted = true;
             await _customerContactRepository.SaveChangesAsync();
 
             return NoContent();
@@ -78,7 +85,7 @@ namespace API.Controllers
             {
                 NotFound();
             }
-            var customerContactFromRepo = await _customerContactRepository.GetSingleAsync(customerContactId);
+            var customerContactFromRepo = await _customerContactRepository.GetSingle(customerContactId);
 
             _mapper.Map(customerContact, customerContactFromRepo);
             _customerContactRepository.Update(customerContactFromRepo);

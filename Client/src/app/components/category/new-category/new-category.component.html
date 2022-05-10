@@ -1,0 +1,35 @@
+<div class="form-container">
+  <div class="title">
+    <h3>New</h3>
+    <hr />
+  </div>
+  <form [formGroup]="categoryForm" (submit)="createCategory()">
+    <div class="category-container">
+      <label id="required">Category Name*</label>
+      <input
+        type="text"
+        class="form-control form-control-sm"
+        formControlName="name"
+        placeholder="Name"
+        style="margin-right: 5px"
+      />
+      <label style="margin-top: 10px">Description</label>
+      <textarea name="remark" rows="4" cols="20" formControlName="description">
+      </textarea>
+    </div>
+  </form>
+
+  <div class="save-cancel">
+    <button
+      type="submit"
+      class="btn btn-primary"
+      (click)="createCategory()"
+      [disabled]="!categoryFormValid()"
+    >
+      Save
+    </button>
+    <button type="button" class="btn btn-default" (click)="close()">
+      Close
+    </button>
+  </div>
+</div>

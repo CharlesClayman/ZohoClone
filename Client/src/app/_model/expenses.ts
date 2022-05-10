@@ -1,12 +1,16 @@
 import { Guid } from 'guid-typescript';
+import { Category } from './category';
+import { Customer } from './customer';
+import { Tax } from './tax';
 
 export interface Expenses {
   id: Guid;
-  dateTime: Date;
-  categoryId: Guid;
+  date: Date;
+  category: Category;
+  currency: string;
   amount: Number;
-  tax: Number;
-  referenceNumber: Number;
+  tax: Tax;
+  referenceNumber: string;
   notes: string;
-  customerId: Guid;
+  customer: Customer;
 }

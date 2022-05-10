@@ -12,7 +12,7 @@ export class AppComponent implements OnInit {
 
   constructor(
     public sharedService: SharedService,
-    private accountService: AccountService
+    public accountService: AccountService
   ) {}
 
   ngOnInit(): void {

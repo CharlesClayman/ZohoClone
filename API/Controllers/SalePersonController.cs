@@ -1,8 +1,10 @@
 ﻿using API.DTOs;
 using API.Entities;
+using API.Helpers;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
@@ -40,16 +42,29 @@ namespace API.Controllers
             {
                 return NotFound();
             }
-            var salesPerson = await _salesPersonRepository.GetSingleAsync(salesPersonId);
+            var salesPerson = await _salesPersonRepository.GetSingleAsQueryable()
+                .Where(x => x.IsDeleted == false)
+                .Where(x=>x.Id == salesPersonId)
+                .FirstOrDefaultAsync();
 
             return Ok(_mapper.Map<SalesPersonReturnDto>(salesPerson));
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetSalesPersons()
+        public async Task<IActionResult> GetSalesPersons([FromQuery] SalespersonQuery query)
         {
-            var salesPersons = await _salesPersonRepository.GetAllAsync();
-            if(salesPersons == null)
+            var quaryable =  _salesPersonRepository.GetAllAsQueryable()
+                .Where(x => x.IsDeleted == false);
+                
+            if(!string.IsNullOrEmpty(query.searchQuery))
+            {
+                quaryable = quaryable.Where(x =>
+                x.Name.Contains(query.searchQuery) ||
+                x.Email.Contains(query.searchQuery));
+            }
+
+            var salesPersons = await quaryable.ToListAsync();
+            if (salesPersons == null)
                 return NotFound();
             return Ok(_mapper.Map<List<SalesPersonReturnDto>>(salesPersons));
         }
@@ -63,8 +78,9 @@ namespace API.Controllers
                 return NotFound();
             }
 
-            var salesPersonEntity = await _salesPersonRepository.GetSingleAsync(salesPersonId);
-            _salesPersonRepository.Delete(salesPersonEntity);
+            var salesPersonEntity = await _salesPersonRepository.GetSingle(salesPersonId);
+            //_salesPersonRepository.Delete(salesPersonEntity);
+            salesPersonEntity.IsDeleted = true;
             await _salesPersonRepository.SaveChangesAsync();
 
             return NoContent();
@@ -79,7 +95,7 @@ namespace API.Controllers
                 return NotFound();
             }
 
-            var salesPersonFromRepo = await _salesPersonRepository.GetSingleAsync(salesPersonId);
+            var salesPersonFromRepo = await _salesPersonRepository.GetSingle(salesPersonId);
             _mapper.Map(salesPerson, salesPersonFromRepo);
             _salesPersonRepository.Update(salesPersonFromRepo);
             await _salesPersonRepository.SaveChangesAsync();

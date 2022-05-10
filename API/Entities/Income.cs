@@ -2,19 +2,20 @@
 
 namespace API.Entities
 {
-    public class Income
+    public class Income:BaseEntity
     {
-        public Guid Id { get; set; }
         [Required]
         public Guid CustomerId { get; set; }   
-        public virtual Customer CustomerName { get; set; }
+        public virtual Customer Customer { get; set; }
         [Required]
-        public int AmountRecieved { get; set; }
+        public string Currency { get; set; }
+        [Required]
+        public decimal AmountReceived { get; set; }
         public decimal BankCharges { get; set; }
         [Required]
         public DateTime PaymentDate { get; set; }
         [Required]
-        public int PaymentNumber { get; set; }
+        public string PaymentNumber { get; set; }
         public string PaymentMode { get; set; }
         public string ReferenceNumber { get; set; }
         public TaxDeducted TaxDeducted { get; set; }

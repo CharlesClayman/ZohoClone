@@ -2,9 +2,8 @@
 
 namespace API.Entities
 {
-    public class Customer
+    public class Customer:BaseEntity
     {
-        public Guid Id { get; set; }
         public CustomerType CustomerType { get; set; }
         public Salutation Salutation { get; set; }
         [Required]
@@ -18,11 +17,12 @@ namespace API.Entities
         public string WorkPhone { get; set; }
         public string MobilePhone { get; set; }
         public string Website { get; set; }
+        public string Remarks { get; set; }
         public CustomerOtherDetails OtherDetails { get; set; }
         public List<CustomerAddress> Address { get; set; } = new List<CustomerAddress>();
         public List<CustomerContactPerson> ContactPersons { get; set; } = new List<CustomerContactPerson>();
         public ICollection<Expenses> Expenses { get; set; } = new HashSet<Expenses>();
-        public string Remarks { get; set; }
+       
         public ICollection<Income> Incomes{ get; set; } = new HashSet<Income>();
     }
 

@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { AccountService } from 'src/app/_services/account.service';
 import { ToastrService } from 'ngx-toastr';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FilesService } from 'src/app/_services/files.service';
 
 @Component({
   selector: 'app-register',
@@ -11,12 +12,15 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 })
 export class RegisterComponent implements OnInit {
   model: any = {};
+  selectedImage!: File;
+  imagePathFromUpload!: any;
   submitted: boolean = false;
 
   constructor(
     private accountService: AccountService,
     private router: Router,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private filesService: FilesService
   ) {}
 
   ngOnInit(): void {}
@@ -27,7 +31,27 @@ export class RegisterComponent implements OnInit {
     email: new FormControl('', [Validators.required]),
     password: new FormControl(null, [Validators.required]),
     companyName: new FormControl(null),
+    companyLogo: new FormControl(null),
   });
+
+  onFileSelected(event: any) {
+    this.selectedImage = event.target.files[0] as File;
+    this.uploadImage();
+  }
+
+  uploadImage() {
+    const formData = new FormData();
+    formData.append('file', this.selectedImage, this.selectedImage.name);
+    this.filesService.upload(formData).subscribe(
+      (response: any) => {
+        this.imagePathFromUpload = response as string;
+        this.toastr.success('Image uploaded');
+      },
+      (error: any) => {
+        this.toastr.error(error.message);
+      }
+    );
+  }
 
   registrationFormValid(): boolean {
     if (this.registrationForm.valid) {
@@ -38,16 +62,18 @@ export class RegisterComponent implements OnInit {
   }
 
   register() {
-    this.submitted = true;
+    //  this.uploadImage();
+    this.registrationForm
+      .get('companyLogo')
+      ?.setValue(this.imagePathFromUpload.dbPath);
     if (this.registrationForm.valid) {
       this.accountService.register(this.registrationForm.value).subscribe(
         (response) => {
           this.router.navigateByUrl('/home');
-          console.log(response);
         },
         (error) => {
           console.error(error);
-          this.toastr.error(error.error);
+          this.toastr.error(error.message);
         }
       );
     }

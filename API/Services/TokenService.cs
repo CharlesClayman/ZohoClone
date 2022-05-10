@@ -1,6 +1,5 @@
 ﻿using API.Entities;
 using API.Interfaces;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -17,28 +16,28 @@ namespace API.Services
             _Key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["TokenKey"]));
         }
 
-
-
         public string CreateToken(AppUser appUser)
         {
             var claims = new List<Claim>()
             {
-                new Claim(JwtRegisteredClaimNames.Email,appUser.Email),
+                new Claim(ClaimTypes.Email,appUser.Email),
+                new Claim(ClaimTypes.NameIdentifier, appUser.Id.ToString()),
             };
 
-            var cred = new SigningCredentials(_Key,SecurityAlgorithms.HmacSha512Signature);
+            var cred = new SigningCredentials(_Key, SecurityAlgorithms.HmacSha512Signature);
 
-            var tokenDescriptor = new SecurityTokenDescriptor
+            var descriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddDays(1),
                 SigningCredentials = cred,
+                Expires = DateTime.UtcNow.AddDays(1),
+                Subject = new ClaimsIdentity(claims),
             };
+
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-           
-     
+
+            var token = tokenHandler.CreateToken(descriptor);
+
             return tokenHandler.WriteToken(token);
         }
     }

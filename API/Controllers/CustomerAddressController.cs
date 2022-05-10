@@ -3,6 +3,7 @@ using API.Entities;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
@@ -40,7 +41,10 @@ namespace API.Controllers
             {
                 return NotFound();
             }
-            var customerAddress = await _customerAddressRepository.GetSingleAsync(customerAddressId);
+            var customerAddress = await _customerAddressRepository.GetSingleAsQueryable()
+                .Where(x=>x.IsDeleted == false)
+                .Where(x=>x.Id == customerAddressId)
+                .FirstOrDefaultAsync();
 
             return Ok(_mapper.Map<CustomerAddressReturnDto>(customerAddress));
         }
@@ -48,7 +52,10 @@ namespace API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCustomerAddresses()
         {
-            var customerAddresses = await _customerAddressRepository.GetAllAsync();
+            var customerAddresses = await _customerAddressRepository.GetAllAsQueryable()
+                .Where(x=>x.IsDeleted == false)
+                .ToListAsync();
+
             if (customerAddresses == null)
                 return NotFound();
 
@@ -63,8 +70,9 @@ namespace API.Controllers
             {
                 NotFound();
             }
-            var customerAddressEntity = await _customerAddressRepository.GetSingleAsync(customerAddressId);
-            _customerAddressRepository.Delete(customerAddressEntity);
+            var customerAddressEntity = await _customerAddressRepository.GetSingle(customerAddressId);
+            // _customerAddressRepository.Delete(customerAddressEntity);
+            customerAddressEntity.IsDeleted = true;
             await _customerAddressRepository.SaveChangesAsync();
 
             return NoContent();
@@ -78,7 +86,7 @@ namespace API.Controllers
             {
                 NotFound();
             }
-            var customerAddressFromRepo = await _customerAddressRepository.GetSingleAsync(customerAddressId);
+            var customerAddressFromRepo = await _customerAddressRepository.GetSingle(customerAddressId);
 
             _mapper.Map(customerAddress, customerAddressFromRepo);
             _customerAddressRepository.Update(customerAddressFromRepo);

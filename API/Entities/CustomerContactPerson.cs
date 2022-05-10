@@ -1,8 +1,7 @@
 ﻿namespace API.Entities
 {
-    public class CustomerContactPerson
+    public class CustomerContactPerson:BaseEntity
     {
-        public Guid Id { get; set; }
         public Guid CustomerId { get; set; }
         public virtual Customer Customer { get; set; }
         public Salutation Salutation { get; set; }

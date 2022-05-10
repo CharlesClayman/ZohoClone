@@ -1,0 +1,130 @@
+<div class="container">
+  <div class="row mt-3">
+    <div class="col">
+      <h3>All Expenses</h3>
+    </div>
+    <div class="col" id="new-item-button">
+      <button type="button" class="btn btn-primary" routerLink="/expenses/new">
+        + New
+      </button>
+    </div>
+  </div>
+  <hr />
+
+  <table class="table" *ngIf="expenses.length > 0">
+    <tr>
+      <th>CATEGORY</th>
+      <th>DATE</th>
+      <th>AMOUNT</th>
+      <th>ACTION</th>
+    </tr>
+
+    <tr *ngFor="let expense of expenses">
+      <td>{{ expense["category"]?.name }}</td>
+      <td>{{ expense["date"] | date: "dd/mm/yyyy" }}</td>
+      <td>
+        {{ expense["currency"]?.substring(0, 3) }} {{ expense["amount"] }}
+      </td>
+      <td>
+        <div class="btn-group" dropdown>
+          <button
+            id="button-basic"
+            dropdownToggle
+            type="button"
+            class="btn btn-primary dropdown-toggle"
+            aria-controls="dropdown-basic"
+          >
+            <span class="caret"></span>
+          </button>
+          <ul
+            id="dropdown-basic"
+            *dropdownMenu
+            class="dropdown-menu"
+            role="menu"
+            aria-labelledby="button-basic"
+          >
+            <li role="menuitem">
+              <a
+                class="dropdown-item"
+                (click)="openModal(expense, expenseDetails)"
+                >View Details</a
+              >
+            </li>
+            <li class="divider dropdown-divider"></li>
+            <li role="menuitem">
+              <a
+                class="dropdown-item"
+                routerLink="/expenses/{{ expense['id'] }}/edit"
+                >Edit</a
+              >
+            </li>
+            <li class="divider dropdown-divider"></li>
+            <li role="menuitem">
+              <a class="dropdown-item" (click)="openModal(expense, deleteModal)"
+                >Delete</a
+              >
+            </li>
+          </ul>
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<ng-template #expenseDetails>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Expense Details</h4>
+  </div>
+  <div class="modal-body">
+    <div class="details-content">
+      <label>Category name:</label>
+      <p>{{ selectedItem?.category?.name }}</p>
+      <label>Amount:</label>
+      <p>
+        {{ selectedItem?.currency?.substring(0, 3) }} {{ selectedItem?.amount }}
+      </p>
+      <label>Date:</label>
+      <p>{{ selectedItem?.date | date: "dd/mm/yyyy" }}</p>
+      <label>Reference number:</label>
+      <p>{{ selectedItem?.referenceNumber }}</p>
+      <label>Notes:</label>
+      <p>{{ selectedItem?.notes }}</p>
+      <label>Customer:</label>
+      <p>
+        {{ selectedItem?.customer?.firstName }}
+        {{ selectedItem?.customer?.lastName }}
+      </p>
+      <label>Tax:</label>
+      <p>
+        {{
+          selectedItem?.tax?.taxName + "[" + selectedItem?.tax?.taxRate + "%]"
+        }}
+      </p>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="submit"
+      class="btn btn-primary"
+      routerLink="/expenses/{{ selectedItem.id }}/edit"
+      (click)="closeModal()"
+    >
+      Edit
+    </button>
+    <button type="submit" class="btn btn-primary" (click)="closeModal()">
+      Close
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #deleteModal>
+  <div class="modal-body text-center">
+    <p>Do you want to delete?</p>
+    <button type="button" class="btn btn-default" (click)="deleteExpense()">
+      Yes
+    </button>
+    <button type="button" class="btn btn-primary" (click)="closeModal()">
+      No
+    </button>
+  </div>
+</ng-template>

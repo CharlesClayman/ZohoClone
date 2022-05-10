@@ -1,0 +1,112 @@
+<div class="container">
+  <div class="title">
+    <h3>Edit Expense</h3>
+  </div>
+  <hr />
+
+  <div>
+    <form [formGroup]="singleExpenseForm">
+      <div class="expense">
+        <label id="required">Date*</label>
+        <div class="wrapper">
+          <div class="row">
+            <div class="col-xs-12 col-12 col-md-4 form-group mb-3">
+              <input
+                type="text"
+                formControlName="date"
+                class="form-control"
+                bsDatepicker
+              />
+            </div>
+          </div>
+        </div>
+        <label id="required">Category Name*</label>
+        <div class="wrapper">
+          <select
+            class="form-select form-select-sm mb-1"
+            formControlName="categoryId"
+            (ngModelChange)="openModal($event)"
+          >
+            <option
+              [ngValue]="category['id']"
+              *ngFor="let category of categories"
+            >
+              {{ category["name"] }}
+            </option>
+            <option value="Configure Category">Create Category</option>
+          </select>
+        </div>
+
+        <label id="required">Amount*</label>
+        <div class="wrapper">
+          <select class="form-select" id="currency" formControlName="currency">
+            <option [ngValue]="currency" *ngFor="let currency of currencies">
+              {{ currency }}
+            </option>
+          </select>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="price"
+            formControlName="amount"
+          />
+        </div>
+        <label>Tax</label>
+        <div class="wrapper">
+          <select
+            class="form-select form-select-sm mb-1"
+            formControlName="taxId"
+            (ngModelChange)="openModal($event)"
+          >
+            <option [ngValue]="tax['id']" *ngFor="let tax of taxes">
+              {{ tax["taxName"] }}
+            </option>
+            <option value="Configure Tax">Create Tax</option>
+          </select>
+        </div>
+        <label>Reference#</label>
+        <div class="wrapper">
+          <input
+            type="text"
+            class="form-control"
+            formControlName="referenceNumber"
+          />
+        </div>
+        <label>Notes</label>
+        <div class="wrapper">
+          <textarea name="remark" formControlName="notes"> </textarea>
+        </div>
+
+        <label>Customer Name</label>
+        <div class="wrapper">
+          <select
+            class="form-select"
+            formControlName="customerId"
+            (ngModelChange)="openModal($event)"
+          >
+            <option
+              [ngValue]="customer['id']"
+              *ngFor="let customer of customers"
+            >
+              {{ customer["firstName"] }} {{ customer["lastName"] }}
+            </option>
+            <option value="Configure Customer">Create Customer</option>
+          </select>
+        </div>
+        <div class="save-cancel mt-5">
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="!expenseFormValid()"
+            (click)="updateExpense()"
+          >
+            Save changes
+          </button>
+          <button type="button" class="btn" routerLink="/expenses">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

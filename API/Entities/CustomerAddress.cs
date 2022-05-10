@@ -3,9 +3,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace API.Entities
 {
-    public class CustomerAddress
-    {   
-        public Guid Id { get; set; }
+    public class CustomerAddress:BaseEntity
+    { 
         public Guid CustomerId { get; set; }
         public AddressType AddressType { get; set; }
         public virtual Customer Customer { get; set; }

@@ -1,8 +1,10 @@
 ﻿using API.DTOs;
 using API.Entities;
+using API.Helpers;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
@@ -18,7 +20,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
-      //  [ItemResultFilter]
+ 
         public async Task<IActionResult> CreateItem([FromBody] ItemCreationDto item)
         {
             if (item == null)
@@ -33,6 +35,7 @@ namespace API.Controllers
             return CreatedAtRoute(nameof(GetItem), new { itemId = itemEntity.Id }, itemToReturn);
         }
 
+
         [HttpGet]
         [Route("{itemId}", Name = "GetItem")]
         public async Task<ActionResult<Item>> GetItem(Guid itemId)
@@ -42,22 +45,34 @@ namespace API.Controllers
             {
                 return NotFound();
             }
-            var item = await _itemsRepository.GetSingleAsync(itemId);
-
+            var item = await _itemsRepository.GetSingleAsQueryable().Where(x => x.Id == itemId).Where(w => w.IsDeleted == false).FirstOrDefaultAsync();
             return Ok(_mapper.Map<ItemReturnDto>(item));
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetItems()
+        public async Task<IActionResult> GetItems([FromQuery] ItemQuery query)
         {
-            var items = await _itemsRepository.GetAllAsync();
+            var queryable = _itemsRepository.GetAllAsQueryable().Where(w=>w.IsDeleted==false);
+
+            if(!string.IsNullOrWhiteSpace(query.searchQuery))
+            {
+                queryable = queryable.Where(x=>
+                x.Name.Contains(query.searchQuery)||
+                x.Description.Contains(query.searchQuery)||
+                x.SellingPrice.ToString().Contains(query.searchQuery)||
+                x.Currency.Contains(query.searchQuery) ||
+                x.Unit.Contains(query.searchQuery));
+            }
+
+            var items = await queryable.ToListAsync();
+
             if (items == null)
                 return NotFound();
 
             return Ok(_mapper.Map<List<ItemReturnDto>>(items));
         }
 
-        [HttpDelete("itemId")]
+        [HttpDelete("{itemId}")]
         public async Task<IActionResult> DeleteItem(Guid itemId)
         {
             var itemExists = await _itemsRepository.Exists(itemId);
@@ -65,12 +80,14 @@ namespace API.Controllers
             {
                 NotFound();
             }
-            var item = await _itemsRepository.GetSingleAsync(itemId);
-            _itemsRepository.Delete(item);
+            var item = await _itemsRepository.GetSingle(itemId);
+            //_itemsRepository.Delete(item);
+            item.IsDeleted = true;
             await _itemsRepository.SaveChangesAsync();
             
             return NoContent();
         }
+        
 
         [HttpPut("{itemId}")]
         public async Task<IActionResult> UpdateItem(Guid itemId,ItemUpdateDto item)
@@ -81,7 +98,7 @@ namespace API.Controllers
                 NotFound();
             }
 
-            var itemFromRepo = await _itemsRepository.GetSingleAsync(itemId);
+            var itemFromRepo = await _itemsRepository.GetSingle(itemId);
             _mapper.Map(item, itemFromRepo);
             _itemsRepository.Update(itemFromRepo);
             await _itemsRepository.SaveChangesAsync();

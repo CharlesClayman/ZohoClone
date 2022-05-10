@@ -1,5 +1,6 @@
 ﻿using API.DTOs;
 using API.Entities;
+using API.Helpers;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -84,19 +85,40 @@ namespace API.Controllers
             {
                 return NotFound();
             }
-            var customer = await _customerRepository.GetSingleAsQueryableAsync(i=>i.Id==customerId,x=>x.OtherDetails,x=>x.Address,x=>x.ContactPersons);
-            ;
+
+            var customer = await _customerRepository.GetSingleAsQueryable().Where(w => w.IsDeleted == false)
+                .Include(x => x.OtherDetails).ThenInclude(x => x.Tax)
+                .Include(x => x.OtherDetails).ThenInclude(x => x.Terms)
+                .Include(x => x.Address)
+                .Include(x => x.ContactPersons)
+                .FirstOrDefaultAsync(u=>u.Id == customerId);
+
+
             return Ok(_mapper.Map<CustomerReturnDto>(customer));
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetCustomers()
+        public async Task<IActionResult> GetCustomers([FromQuery] CustomerQuery query )
         {
-            var customers = await _customerRepository
+            var queryable = _customerRepository
                 .GetAllAsQueryable()
                 .Include(x => x.OtherDetails)
+                .Include(x => x.OtherDetails)
                 .Include(x => x.Address)
-                .Include(x => x.ContactPersons).ToListAsync();
+                .Include(x => x.ContactPersons)
+                .Where(w => w.IsDeleted == false);
+            if(!string.IsNullOrEmpty(query.searchQuery))
+            {
+                queryable = queryable.Where(x =>
+                x.FirstName.Contains(query.searchQuery)||
+                x.LastName.Contains(query.searchQuery)||
+                x.CompanyName.Contains(query.searchQuery)||
+                x.Email.Contains(query.searchQuery)||
+                x.WorkPhone.Contains(query.searchQuery)
+                );
+            }
+
+            var customers = await queryable.ToListAsync();
 
             if (customers == null)
                 return NotFound();
@@ -111,8 +133,9 @@ namespace API.Controllers
             {
                 NotFound();
             }
-            var customerEntity = await _customerRepository.GetSingleAsync(customerId);
-            _customerRepository.Delete(customerEntity);
+            var customerEntity = await _customerRepository.GetSingle(customerId);
+          
+            customerEntity.IsDeleted = true;
             await _customerRepository.SaveChangesAsync();
 
             return NoContent();
@@ -166,7 +189,13 @@ namespace API.Controllers
                 customer.ContactPersons = null;
             }
 
-            var customerFromRepo = await _customerRepository.GetSingleAsQueryableAsync(x=>x.Id==customerId,i=>i.OtherDetails,i=>i.Address,i=>i.ContactPersons);
+            var customerFromRepo = await _customerRepository.GetSingleAsQueryable()
+                .Where(i => i.Id == customerId)
+                .Where(w => w.IsDeleted == false)
+                .Include(x => x.OtherDetails)
+                .Include(x => x.ContactPersons)
+                .Include(x => x.Address)
+                .FirstOrDefaultAsync();
 
             _mapper.Map(customer, customerFromRepo);
             _customerRepository.Update(customerFromRepo);

@@ -1,0 +1,16 @@
+:host {
+  display: none;
+}
+
+.form-content {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-column-gap: 5%;
+  grid-row-gap: 20px;
+}
+
+.tax-modal-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+

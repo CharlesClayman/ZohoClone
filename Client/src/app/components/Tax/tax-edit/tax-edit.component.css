@@ -1,0 +1,15 @@
+.form-container{
+    padding: 30px;
+ }
+ 
+ .save-cancel{
+     margin-top: 15px;
+ }
+
+ .tax-modal-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 10px;
+    margin: 5px;
+  }
+  

@@ -1,8 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Guid } from 'guid-typescript';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
-import { Terms } from '../_model/terms';
+import { Term } from '../_model/term';
 
 @Injectable({
   providedIn: 'root',
@@ -12,16 +13,27 @@ export class TermsService {
 
   constructor(private http: HttpClient) {}
 
-  getTerms() {
-    return this.http.get(this.baseUrl + 'term');
+  getTerms(query: string | null = null) {
+    let params = new HttpParams();
+    if (query) {
+      params = params.append('searchQuery', query);
+    }
+    return this.http.get(this.baseUrl + 'term', { params });
+  }
+
+  getSingleTerm(id: Guid) {
+    return this.http.get(this.baseUrl + 'term/' + id);
   }
 
   createTerm(model: any) {
-    return this.http.post<Terms>(this.baseUrl + 'term', model).pipe(
-      map((response: Terms) => {
-        const term = response;
-        console.log(term);
-      })
-    );
+    return this.http.post(this.baseUrl + 'term', model);
+  }
+
+  deleteTerm(id: Guid) {
+    return this.http.delete(`${this.baseUrl}term/${id}`);
+  }
+
+  updateTerm(model: any, id: Guid) {
+    return this.http.put(`${this.baseUrl}term/${id}`, model);
   }
 }

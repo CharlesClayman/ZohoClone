@@ -35,12 +35,13 @@
             <img src="assets/_icons/history.png" width="25px" height="25px" />
           </div>
 
-          <form class="d-flex">
+          <form [formGroup]="searchForm" class="d-flex">
             <input
               class="form-control me-2"
               type="search"
               placeholder="Search"
               aria-label="Search"
+              formControlName="searchWord"
             />
           </form>
         </ul>

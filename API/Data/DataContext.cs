@@ -36,13 +36,25 @@ namespace API.Data
                 .HasPrecision(18,2);
 
             builder.Entity<Invoice>()
-                .Property(p => p.ShippingCharges)
+                .Property(p=>p.SubTotal)
+                 .HasPrecision(18, 2);
+            builder.Entity<Invoice>()
+                .Property(p => p.Adjustments)
                 .HasPrecision(18, 2);
+            builder.Entity<Invoice>()
+                .Property(p=>p.Total)
+                .HasPrecision(18,2);
             builder.Entity<Income>()
                 .Property(p => p.BankCharges)
                 .HasPrecision(18, 2);
             builder.Entity<Expenses>()
                 .Property(p => p.Amount)
+                .HasPrecision(18, 2);
+            builder.Entity<Income>()
+                .Property(p => p.AmountReceived)
+                .HasPrecision(18, 2);
+            builder.Entity<Tax>()
+                .Property(p => p.TaxRate)
                 .HasPrecision(18, 2);
         }
         public DbSet<Income> Income { get; set; }

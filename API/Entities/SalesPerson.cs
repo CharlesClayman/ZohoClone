@@ -1,9 +1,8 @@
 ﻿namespace API.Entities
 {
-    public class SalesPerson
+    public class SalesPerson:BaseEntity
     {
-        public Guid Id { get; set; }
-        public virtual Invoice Invoice { get; set; }
+        public virtual ICollection<Invoice> Invoice { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
     }

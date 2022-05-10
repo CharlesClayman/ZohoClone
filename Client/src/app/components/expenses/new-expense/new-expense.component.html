@@ -1,0 +1,238 @@
+<div class="container">
+  <div class="title">
+    <h3>New Expense</h3>
+  </div>
+
+  <div>
+    <tabset class="member-tabset">
+      <tab heading="Record Expenses">
+        <form [formGroup]="singleExpenseForm">
+          <div class="expense">
+            <label id="required">Date*</label>
+            <div class="wrapper">
+              <div class="row">
+                <div class="col-xs-12 col-12 col-md-4 form-group mb-3">
+                  <input
+                    type="text"
+                    formControlName="date"
+                    class="form-control"
+                    bsDatepicker
+                    [bsConfig]="{
+                      isAnimated: true,
+                      dateInputFormat: 'DD/MM/YYYY'
+                    }"
+                  />
+                </div>
+              </div>
+            </div>
+            <label id="required">Category Name*</label>
+            <div class="wrapper">
+              <select
+                class="form-select form-select-sm mb-1"
+                formControlName="categoryId"
+                (ngModelChange)="openModal($event)"
+              >
+                <option
+                  [ngValue]="category['id']"
+                  *ngFor="let category of categories"
+                >
+                  {{ category["name"] }}
+                </option>
+                <option value="Configure Category">Create Category</option>
+              </select>
+            </div>
+
+            <label id="required">Amount*</label>
+            <div class="wrapper">
+              <select
+                class="form-select"
+                id="currency"
+                formControlName="currency"
+              >
+                <option
+                  [ngValue]="currency"
+                  *ngFor="let currency of currencies"
+                >
+                  {{ currency }}
+                </option>
+              </select>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="price"
+                formControlName="amount"
+              />
+            </div>
+            <label>Tax</label>
+            <div class="wrapper">
+              <select
+                class="form-select form-select-sm mb-1"
+                formControlName="taxId"
+                (ngModelChange)="openModal($event)"
+              >
+                <option [ngValue]="tax['id']" *ngFor="let tax of taxes">
+                  {{ tax["taxName"] }}
+                </option>
+                <option value="Configure Tax">Create Tax</option>
+              </select>
+            </div>
+            <label>Reference#</label>
+            <div class="wrapper">
+              <input
+                type="text"
+                class="form-control"
+                formControlName="referenceNumber"
+              />
+            </div>
+            <label>Notes</label>
+            <div class="wrapper">
+              <textarea name="remark" formControlName="notes"> </textarea>
+            </div>
+
+            <label>Customer Name</label>
+            <div class="wrapper">
+              <select
+                class="form-select"
+                formControlName="customerId"
+                (ngModelChange)="openModal($event)"
+              >
+                <option
+                  [ngValue]="customer['id']"
+                  *ngFor="let customer of customers"
+                >
+                  {{ customer["firstName"] }} {{ customer["lastName"] }}
+                </option>
+                <option value="Configure Customer">Create Customer</option>
+              </select>
+            </div>
+            <div class="save-cancel mt-5">
+              <button
+                type="submit"
+                class="btn btn-primary"
+                [disabled]="!expenseFormValid()"
+                (click)="createSingleExpense()"
+              >
+                Save
+              </button>
+              <button type="button" class="btn" routerLink="/expenses">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </form>
+      </tab>
+      <tab heading="Record Bulk Expenses"
+        ><br />
+
+        <form [formGroup]="BEForm">
+          <table>
+            <tr>
+              <th id="required">Date*</th>
+              <th id="required">Category Name*</th>
+              <th id="required">Currency*</th>
+              <th id="required">Amount*</th>
+              <th>Tax</th>
+              <th>Reference#</th>
+              <th>Notes</th>
+              <th>Customer Name</th>
+            </tr>
+
+            <ng-container
+              formArrayName="expenseForm"
+              *ngFor="let item of expenses.controls; let i = index"
+            >
+              <tr [formGroupName]="i">
+                <td>
+                  <input
+                    type="text"
+                    formControlName="date"
+                    class="form-control"
+                    bsDatepicker
+                    [bsConfig]="{
+                      isAnimated: true,
+                      dateInputFormat: 'DD/MM/YYYY'
+                    }"
+                  />
+                </td>
+                <td>
+                  <select
+                    formControlName="categoryId"
+                    (ngModelChange)="openModal($event)"
+                  >
+                    <option
+                      [ngValue]="category['id']"
+                      *ngFor="let category of categories"
+                    >
+                      {{ category["name"] }}
+                    </option>
+                    <option value="Configure Category">Create Category</option>
+                  </select>
+                </td>
+                <td>
+                  <select id="currency" formControlName="currency">
+                    <option
+                      [ngValue]="currency"
+                      *ngFor="let currency of currencies"
+                    >
+                      {{ currency }}
+                    </option>
+                  </select>
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    placeholder="price"
+                    formControlName="amount"
+                  />
+                </td>
+                <td>
+                  <select
+                    formControlName="taxId"
+                    (ngModelChange)="openModal($event)"
+                  >
+                    <option [ngValue]="tax['id']" *ngFor="let tax of taxes">
+                      {{ tax["taxName"] }}
+                    </option>
+                    <option value="Configure Tax">Create Tax</option>
+                  </select>
+                </td>
+                <td><input type="text" formControlName="referenceNumber" /></td>
+                <td>
+                  <input type="text" formControlName="notes" />
+                </td>
+                <td>
+                  <select
+                    formControlName="customerId"
+                    (ngModelChange)="openModal($event)"
+                  >
+                    <option
+                      [ngValue]="customer['id']"
+                      *ngFor="let customer of customers"
+                    >
+                      {{ customer["firstName"] + " " + customer["lastName"] }}
+                    </option>
+                    <option value="Configure Customer">Create Customer</option>
+                  </select>
+                </td>
+              </tr>
+            </ng-container>
+          </table>
+        </form>
+
+        <div style="text-align: right">
+          <button class="btn btn-primary" type="button" (click)="addExpense()">
+            + Add Expense
+          </button>
+        </div>
+        <button
+          class="btn btn-primary"
+          type="button"
+          [disabled]="!bulkExpenseFormValid()"
+          (click)="CreateBulkExpense()"
+        >
+          Save
+        </button>
+      </tab>
+    </tabset>
+  </div>
+</div>

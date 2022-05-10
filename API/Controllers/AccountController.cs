@@ -1,8 +1,8 @@
-﻿using API.Data;
-using API.DTOs;
+﻿using API.DTOs;
 using API.Entities;
 using API.Interfaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,21 +16,25 @@ namespace API.Controllers
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IMapper _mapper;
         private readonly ITokenService _tokenService;
+        private readonly ICurrentUserService _currentUserService;
+  
 
         public AccountController(
                                  UserManager<AppUser> userManager,
                                  SignInManager<AppUser> signInManager,
                                  IMapper mapper,
-                                 ITokenService tokenService
-                               )
+                                 ITokenService tokenService, 
+                                 ICurrentUserService currentUserService
+                                 )
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _mapper = mapper;
             _tokenService = tokenService;
-           
+            _currentUserService = currentUserService;
         }
 
+        [AllowAnonymous]
         [HttpPost("register")]
         public async Task<ActionResult<AppUserReturnDto>> Register(AppUserCreationDto appUser)
         {
@@ -54,6 +58,7 @@ namespace API.Controllers
             });
         }
 
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<ActionResult<AppUserReturnDto>> Login(LoginDto loginDto)
         {
@@ -61,15 +66,30 @@ namespace API.Controllers
             if (user == null)
                 return Unauthorized("Invalid email");
 
-           var result = await _signInManager.CheckPasswordSignInAsync(user,loginDto.Password,false);
+            var result = await _userManager.CheckPasswordAsync(user,loginDto.Password);
 
-            if (!result.Succeeded) return Unauthorized("Invalid password");
+            if (!result) return Unauthorized("Invalid password");
 
             return new AppUserReturnDto
             {
                 Email = user.Email,
                 Token = _tokenService.CreateToken(user),
             };
+        }
+
+     
+        [HttpGet("currentUserInfo")]
+        public async Task<ActionResult<AppUser>> GetCurrentUserInfo()
+        {
+           
+            var userId = _currentUserService.UserId;
+            if (userId != Guid.Empty)
+            {
+                var user = await _userManager.FindByIdAsync(userId.ToString());
+                var userToReturn = _mapper.Map<CurrentUserReturnDto>(user);
+                return Ok(userToReturn);
+            }
+            return Unauthorized("User not logged in");
         }
 
     }

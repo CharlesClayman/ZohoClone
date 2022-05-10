@@ -19,8 +19,6 @@ namespace API.DTOs
         public CustomerOtherDetailsReturnDto OtherDetails { get; set; }
         public List<CustomerAddressReturnDto> Address { get; set; }
         public List<CustomerContactReturnDto> ContactPersons { get; set; }
-        public List<ExpenseReturnDto> Expenses { get; set; }
-        public List<IncomeReturnDto> Incomes { get; set; }
     }
 
 }

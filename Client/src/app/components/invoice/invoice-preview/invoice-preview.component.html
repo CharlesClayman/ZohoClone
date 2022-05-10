@@ -1,0 +1,116 @@
+<div class="container">
+  <div class="card" id="exterior">
+    <div class="container" id="print-section">
+      <div class="card">
+        <div class="section">
+          <div style="float: left; display: block">
+            <P
+              ><img
+                src="http://localhost:5233/Resources/Images/{{ imageName }}"
+                height="200px"
+                width="200px"
+                alt="Company Logo"
+            /></P>
+            <p>{{ currentUser?.companyName }}</p>
+            <p>Ghana</p>
+          </div>
+
+          <div style="float: right">
+            <h1>INVOICE</h1>
+            <p>#{{ invoice?.invoiceNumber }}</p>
+            <P>Balance Due</P>
+            <strong
+              ><p>
+                {{ invoice?.customer?.otherDetails?.currency?.substring(0, 3) }}
+                {{ invoice?.total }}
+              </p></strong
+            >
+            <p>Invoice Date: {{ invoice?.invoiceDate | date: "dd/MM/YYYY" }}</p>
+            <p>Terms: {{ invoice?.terms?.termName }}</p>
+            <p>Due Date: {{ invoice?.dueDate | date: "dd/MM/YYYY" }}</p>
+            <p>P.O#: {{ invoice?.orderNumber }}</p>
+          </div>
+        </div>
+        <div class="section">
+          <div style="float: left">
+            <p>Bill To</p>
+            <p>
+              {{ invoice?.customer?.firstName }}
+              {{ invoice?.customer?.lastName }}
+            </p>
+            <p>Subject:</p>
+            <p>{{ invoice?.subject }}</p>
+          </div>
+        </div>
+        <table class="section">
+          <tr style="background-color: black; color: white">
+            <th>#</th>
+            <th>Item & Description</th>
+            <th>Quantity</th>
+            <th>Rate</th>
+            <th>Amount</th>
+          </tr>
+          <tr *ngFor="let invoiceItem of invoiceItems; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td>
+              {{ invoiceItem?.itemName }}
+              <ng-container *ngIf="invoiceItem?.description">
+                ({{ invoiceItem?.description }})
+              </ng-container>
+            </td>
+            <td>{{ invoiceItem?.quantity }}</td>
+            <td>{{ invoiceItem?.rate }}</td>
+            <td>
+              {{ invoiceItem?.amount }}
+            </td>
+          </tr>
+        </table>
+        <div class="section" style="margin-top: 20px">
+          <div style="float: right">
+            <p>
+              Subtotal:
+              {{ invoice?.subTotal }}
+            </p>
+
+            <p *ngFor="let tax of taxes">
+              <ng-container *ngIf="tax.tax && tax.value">
+                {{ tax?.tax }}:
+                {{ tax?.value }}
+              </ng-container>
+            </p>
+
+            <p>Discount: {{ discountValue }} ({{ invoice?.discount }}%)</p>
+            <p
+              *ngIf="invoice?.adjustments != 0 || invoice?.adjustments === null"
+            >
+              Adjustment:
+              {{ invoice?.adjustments }}
+            </p>
+            <p>
+              <strong>Total:</strong>
+              {{ invoice?.customer?.otherDetails?.currency?.substring(0, 3) }}
+              {{ invoice?.total }}
+            </p>
+          </div>
+        </div>
+        <div class="section" style="margin-top: 20px">
+          <div style="float: left">
+            <p>Notes</p>
+            <p>{{ invoice?.customerNotes }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="text-align: center; margin-top: 30px">
+    <button
+      type="button"
+      class="btn btn-primary"
+      [useExistingCss]="true"
+      printSectionId="print-section"
+      ngxPrint
+    >
+      Print
+    </button>
+  </div>
+</div>

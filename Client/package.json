@@ -23,6 +23,7 @@
     "guid-typescript": "^1.0.9",
     "ng-sidebar": "^9.4.3",
     "ngx-bootstrap": "^7.1.2",
+    "ngx-print": "^1.2.1",
     "ngx-toastr": "^14.2.1",
     "rxjs": "~6.6.0",
     "toastr": "^2.1.4",

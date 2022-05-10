@@ -1,0 +1,47 @@
+<div class="form-container">
+  <h3>New Tax</h3>
+  <hr />
+  <form [formGroup]="taxForm" (submit)="createTax()">
+    <div class="tax-modal-container">
+      <label style="color: red">Tax Name*</label>
+      <input
+        type="text"
+        class="form-control form-control-sm"
+        formControlName="taxName"
+        placeholder="VAT"
+        style="margin-right: 5px"
+      />
+      <label style="color: red">Rate(%)*</label>
+      <input
+        type="number"
+        class="form-control form-control-sm"
+        formControlName="taxRate"
+        placeholder="0"
+        style="margin-right: 5px"
+      />
+      <div style="margin-top: 5px">
+        <label>This tax is a compound tax?</label>
+        <input
+          type="checkbox"
+          formControlName="compoundTax"
+          [value]="true"
+          style="margin-left: 10px"
+        />
+      </div>
+    </div>
+  </form>
+
+  <div class="save-cancel">
+    <button
+      type="submit"
+      class="btn btn-primary"
+      (click)="createTax()"
+      [disabled]="!taxFormValid()"
+    >
+      Save
+    </button>
+    <button type="button" class="btn btn-default" (click)="close()">
+      Cancel
+    </button>
+  </div>
+</div>

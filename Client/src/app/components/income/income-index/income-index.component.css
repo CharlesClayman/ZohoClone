@@ -1,0 +1,23 @@
+.details-content {
+  display: Grid;
+  grid-template-columns: auto 1fr;
+  grid-column-gap: 10px;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td,
+th {
+  text-align: left;
+}
+
+tr {
+  height: 40px;
+}
+
+tr:hover {
+  background-color: #ddd;
+}

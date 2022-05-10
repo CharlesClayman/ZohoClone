@@ -1,8 +1,10 @@
 ﻿using API.DTOs;
 using API.Entities;
+using API.Helpers;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
@@ -38,15 +40,28 @@ namespace API.Controllers
             {
                 return NotFound();
             }
-            var terms = await _termRepository.GetSingleAsync(termId);
+            var terms = await _termRepository.GetSingleAsQueryable()
+                .Where(x => x.IsDeleted == false)
+                .Where(x => x.Id == termId)
+                .FirstOrDefaultAsync(); 
          
             return Ok(_mapper.Map<TermReturnDto>(terms));
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetTerms()
+        public async Task<IActionResult> GetTerms([FromQuery] TermQuery query)
         {
-            var terms = await _termRepository.GetAllAsync();
+            var quaryable = _termRepository.GetAllAsQueryable()
+                .Where(x => x.IsDeleted == false);
+
+            if (!string.IsNullOrEmpty(query.searchQuery))
+            {
+                quaryable = quaryable.Where(x =>
+                x.TermName.Contains(query.searchQuery) ||
+                x.TermDays.ToString().Contains(query.searchQuery));
+            }
+
+            var terms = await quaryable.ToListAsync();
             if (terms == null)
                 return NotFound();
             return Ok(_mapper.Map<List<TermReturnDto>>(terms));
@@ -62,8 +77,10 @@ namespace API.Controllers
                 return NotFound();
             }
 
-            var termEntity = await _termRepository.GetSingleAsync(termId);
-            _termRepository.Delete(termEntity);
+            var termEntity = await _termRepository.GetSingle(termId);
+                
+            //_termRepository.Delete(termEntity);
+            termEntity.IsDeleted = true;
             await _termRepository.SaveChangesAsync();
 
             return NoContent();
@@ -77,11 +94,10 @@ namespace API.Controllers
             {
                 return NotFound();
             }
+            var termFromRepo = await _termRepository.GetSingle(termId);
 
-            var termFromRepo = await _termRepository.GetSingleAsync(termId);
 
             _mapper.Map(term, termFromRepo);
-
             _termRepository.Update(termFromRepo);
             await _termRepository.SaveChangesAsync();
 

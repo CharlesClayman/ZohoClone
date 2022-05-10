@@ -1,8 +1,10 @@
 ﻿using API.DTOs;
 using API.Entities;
+using API.Helpers;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
@@ -29,9 +31,11 @@ namespace API.Controllers
 
             var expenseToReturn = _mapper.Map<ExpenseReturnDto>(expenseEntity);
 
-            return CreatedAtRoute(nameof(GetExpense),new {expenseId = expenseEntity.Id}, expenseToReturn);
+            return CreatedAtRoute(nameof(GetExpense), new { expenseId = expenseEntity.Id }, expenseToReturn);
         }
 
+
+         
         [HttpGet]
         [Route("{expenseId}",Name ="GetExpense")]
         public async Task<IActionResult> GetExpense(Guid expenseId)
@@ -42,17 +46,37 @@ namespace API.Controllers
             {
                 return NotFound();
             }
-            var expense = await _expensesRepository.GetSingleAsync(expenseId);
+            
+            var expense =await  _expensesRepository.GetSingleAsQueryable()
+                .Where(x=>x.IsDeleted==false)
+                .Include(x=>x.Category)
+                .Include(x=>x.Tax)
+                .Include(x=>x.Customer)
+                .FirstOrDefaultAsync(x=>x.Id ==expenseId);
 
             return Ok(_mapper.Map<ExpenseReturnDto>(expense));
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetExpenses()
+        public async Task<IActionResult> GetExpenses([FromQuery] ExpenseQuery query)
         {
-            var users = await _expensesRepository.GetAllAsync();
-
-            if(users == null)
+            var queryable = _expensesRepository.GetAllAsQueryable()
+               .Include(x => x.Category)
+               .Include(x => x.Tax)
+               .Include(x => x.Customer)
+                .Where(x => x.IsDeleted == false);
+               
+            if(!string.IsNullOrEmpty(query.searchQuery))
+            {
+                queryable = queryable.Where(x =>
+                x.Category.Name.Contains(query.searchQuery)||
+                x.Date.ToString().Contains(query.searchQuery)||
+                x.Amount.ToString().Contains(query.searchQuery) ||
+                x.Currency.Contains(query.searchQuery));
+            }
+            
+            var users = await queryable.ToListAsync();
+            if (users == null)
                 return NotFound();
 
             return Ok(_mapper.Map<IEnumerable<ExpenseReturnDto>>(users));
@@ -66,8 +90,9 @@ namespace API.Controllers
             {
                 NotFound();
             }
-            var expenseEntity = await _expensesRepository.GetSingleAsync(expenseId);
-            _expensesRepository.Delete(expenseEntity);
+            var expenseEntity = await _expensesRepository.GetSingle(expenseId);
+            // _expensesRepository.Delete(expenseEntity);
+            expenseEntity.IsDeleted = true;
             await _expensesRepository.SaveChangesAsync();
 
             return NoContent();
@@ -81,7 +106,7 @@ namespace API.Controllers
             {
                 NotFound();
             }
-            var expenseFromRepo = await _expensesRepository.GetSingleAsync(expenseId);
+            var expenseFromRepo = await _expensesRepository.GetSingle(expenseId);
 
             _mapper.Map(expense,expenseFromRepo);
             _expensesRepository.Update(expenseFromRepo);

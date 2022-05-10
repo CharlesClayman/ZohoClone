@@ -1,0 +1,122 @@
+<div class="container">
+  <div class="row mt-3">
+    <div class="col">
+      <h3>All Items</h3>
+    </div>
+    <div class="col" id="new-item-button">
+      <button type="button" class="btn btn-primary" routerLink="/items/new">
+        + New
+      </button>
+    </div>
+  </div>
+  <hr />
+
+  <table class="table" *ngIf="items.length > 0">
+    <tr>
+      <th>ITEM NAME</th>
+      <th>DESCRIPTION</th>
+      <th>RATE</th>
+      <th>UNIT</th>
+      <th>ACTION</th>
+    </tr>
+    <tr *ngFor="let item of items">
+      <td>{{ item["name"] }}</td>
+      <td>{{ item["description"] }}</td>
+      <td>
+        {{ item["currency"]?.substring(0, 3) }} {{ item["sellingPrice"] }}
+      </td>
+      <td>{{ item["unit"] }}</td>
+      <td>
+        <div class="btn-group" dropdown>
+          <button
+            id="button-basic"
+            dropdownToggle
+            type="button"
+            class="btn btn-primary dropdown-toggle"
+            aria-controls="dropdown-basic"
+          >
+            <span class="caret"></span>
+          </button>
+          <ul
+            id="dropdown-basic"
+            *dropdownMenu
+            class="dropdown-menu"
+            role="menu"
+            aria-labelledby="button-basic"
+          >
+            <li role="menuitem">
+              <a class="dropdown-item" (click)="openModal(item, itemDetails)"
+                >View Details</a
+              >
+            </li>
+            <li class="divider dropdown-divider"></li>
+            <li role="menuitem">
+              <a class="dropdown-item" routerLink="/items/{{ item['id'] }}/edit"
+                >Edit</a
+              >
+            </li>
+            <li class="divider dropdown-divider"></li>
+            <li role="menuitem">
+              <a class="dropdown-item" (click)="openModal(item, deleteModal)"
+                >Delete</a
+              >
+            </li>
+          </ul>
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<ng-template #itemDetails>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Item Details</h4>
+  </div>
+  <div class="modal-body">
+    <div class="details-content">
+      <label>Item Name:</label>
+      <p>{{ selectedItem.name }}</p>
+      <label>Item Type:</label>
+      <ng-container *ngIf="selectedItem.itemType === 0">
+        <p>Goods</p>
+      </ng-container>
+      <ng-container *ngIf="selectedItem.itemType === 1">
+        <p>Service</p>
+      </ng-container>
+      <label>Unit:</label>
+      <p>{{ selectedItem.unit }}</p>
+      <label>Selling Price:</label>
+      <p>
+        {{ selectedItem?.currency?.substring(0, 3) }}
+        {{ selectedItem?.sellingPrice }}
+      </p>
+      <label>Description:</label>
+      <p>{{ selectedItem?.description }}</p>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="submit"
+      class="btn btn-primary"
+      routerLink="/items/{{ selectedItem.id }}/edit"
+      (click)="closeModal()"
+    >
+      Edit
+    </button>
+    <button type="submit" class="btn btn-primary" (click)="closeModal()">
+      Close
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #deleteModal>
+  <div class="modal-body text-center">
+    <p>Do you want to delete?</p>
+    <button type="button" class="btn btn-default" (click)="deleteItem()">
+      Yes
+    </button>
+    <button type="button" class="btn btn-primary" (click)="closeModal()">
+      No
+    </button>
+  </div>
+</ng-template>

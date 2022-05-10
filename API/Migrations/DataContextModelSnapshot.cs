@@ -59,6 +59,9 @@ namespace API.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<string>("CompanyLogo")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("CompanyName")
                         .HasColumnType("nvarchar(max)");
 
@@ -149,6 +152,9 @@ namespace API.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
@@ -179,6 +185,9 @@ namespace API.Migrations
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -228,6 +237,9 @@ namespace API.Migrations
                     b.Property<string>("Fax")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Phone")
                         .HasColumnType("nvarchar(max)");
 
@@ -264,6 +276,9 @@ namespace API.Migrations
 
                     b.Property<string>("FirstName")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
@@ -302,10 +317,13 @@ namespace API.Migrations
                     b.Property<string>("Facebook")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PaymentTerms")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<Guid?>("TaxId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("TermsId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Twitter")
@@ -316,9 +334,9 @@ namespace API.Migrations
                     b.HasIndex("CustomerId")
                         .IsUnique();
 
-                    b.HasIndex("TaxId")
-                        .IsUnique()
-                        .HasFilter("[TaxId] IS NOT NULL");
+                    b.HasIndex("TaxId");
+
+                    b.HasIndex("TermsId");
 
                     b.ToTable("CustomerOtherDetails");
                 });
@@ -336,17 +354,23 @@ namespace API.Migrations
                     b.Property<Guid>("CategoryId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Currency")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid?>("CustomerId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ReferenceNumber")
-                        .HasColumnType("int");
+                    b.Property<string>("ReferenceNumber")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("TaxId")
                         .HasColumnType("uniqueidentifier");
@@ -357,9 +381,7 @@ namespace API.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.HasIndex("TaxId")
-                        .IsUnique()
-                        .HasFilter("[TaxId] IS NOT NULL");
+                    b.HasIndex("TaxId");
 
                     b.ToTable("Expenses");
                 });
@@ -370,18 +392,26 @@ namespace API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("AmountRecieved")
-                        .HasColumnType("int");
+                    b.Property<decimal>("AmountReceived")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("BankCharges")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("InvoiceId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
@@ -392,8 +422,9 @@ namespace API.Migrations
                     b.Property<string>("PaymentMode")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PaymentNumber")
-                        .HasColumnType("int");
+                    b.Property<string>("PaymentNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ReferenceNumber")
                         .HasColumnType("nvarchar(max)");
@@ -421,10 +452,14 @@ namespace API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Adjustments")
-                        .HasColumnType("int");
+                    b.Property<decimal>("Adjustments")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("AttachFile")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Currency")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("CustomerId")
@@ -436,6 +471,9 @@ namespace API.Migrations
                     b.Property<int>("Discount")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("DueDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("InvoiceDate")
                         .HasColumnType("datetime2");
 
@@ -443,16 +481,19 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("ItemId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("OrderNumber")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("Paid")
+                        .HasColumnType("bit");
+
                     b.Property<Guid?>("SalesPersonId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal>("ShippingCharges")
+                    b.Property<decimal>("SubTotal")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
@@ -465,28 +506,59 @@ namespace API.Migrations
                     b.Property<string>("TermsAndConditions")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("TermsId")
+                    b.Property<Guid?>("TermsId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Total")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
 
-                    b.HasIndex("ItemId")
-                        .IsUnique();
+                    b.HasIndex("SalesPersonId");
 
-                    b.HasIndex("SalesPersonId")
-                        .IsUnique()
-                        .HasFilter("[SalesPersonId] IS NOT NULL");
+                    b.HasIndex("TaxId");
 
-                    b.HasIndex("TaxId")
-                        .IsUnique()
-                        .HasFilter("[TaxId] IS NOT NULL");
-
-                    b.HasIndex("TermsId")
-                        .IsUnique();
+                    b.HasIndex("TermsId");
 
                     b.ToTable("Invoice");
+                });
+
+            modelBuilder.Entity("API.Entities.InvoiceItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("InvoiceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("TaxId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InvoiceId");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("TaxId");
+
+                    b.ToTable("InvoiceItem");
                 });
 
             modelBuilder.Entity("API.Entities.Item", b =>
@@ -495,8 +567,14 @@ namespace API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Currency")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<int>("ItemType")
                         .HasColumnType("int");
@@ -509,17 +587,10 @@ namespace API.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<Guid?>("TaxId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Unit")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("TaxId")
-                        .IsUnique()
-                        .HasFilter("[TaxId] IS NOT NULL");
 
                     b.ToTable("Item");
                 });
@@ -532,6 +603,9 @@ namespace API.Migrations
 
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -550,12 +624,16 @@ namespace API.Migrations
                     b.Property<bool>("CompoundTax")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("TaxName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TaxRate")
-                        .HasColumnType("int");
+                    b.Property<decimal>("TaxRate")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -569,6 +647,9 @@ namespace API.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("Customized")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
                     b.Property<int>("TermDays")
@@ -720,12 +801,18 @@ namespace API.Migrations
                         .IsRequired();
 
                     b.HasOne("API.Entities.Tax", "Tax")
-                        .WithOne("CustomerOtherDetails")
-                        .HasForeignKey("API.Entities.CustomerOtherDetails", "TaxId");
+                        .WithMany("CustomerOtherDetails")
+                        .HasForeignKey("TaxId");
+
+                    b.HasOne("API.Entities.Terms", "Terms")
+                        .WithMany()
+                        .HasForeignKey("TermsId");
 
                     b.Navigation("Customer");
 
                     b.Navigation("Tax");
+
+                    b.Navigation("Terms");
                 });
 
             modelBuilder.Entity("API.Entities.Expenses", b =>
@@ -741,8 +828,8 @@ namespace API.Migrations
                         .HasForeignKey("CustomerId");
 
                     b.HasOne("API.Entities.Tax", "Tax")
-                        .WithOne("Expenses")
-                        .HasForeignKey("API.Entities.Expenses", "TaxId");
+                        .WithMany("Expenses")
+                        .HasForeignKey("TaxId");
 
                     b.Navigation("Category");
 
@@ -753,7 +840,7 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Entities.Income", b =>
                 {
-                    b.HasOne("API.Entities.Customer", "CustomerName")
+                    b.HasOne("API.Entities.Customer", "Customer")
                         .WithMany("Incomes")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -763,7 +850,7 @@ namespace API.Migrations
                         .WithOne("Income")
                         .HasForeignKey("API.Entities.Income", "InvoiceId");
 
-                    b.Navigation("CustomerName");
+                    b.Navigation("Customer");
 
                     b.Navigation("Invoice");
                 });
@@ -776,42 +863,46 @@ namespace API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("API.Entities.Item", "Item")
-                        .WithOne("Invoice")
-                        .HasForeignKey("API.Entities.Invoice", "ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("API.Entities.SalesPerson", "SalesPerson")
-                        .WithOne("Invoice")
-                        .HasForeignKey("API.Entities.Invoice", "SalesPersonId");
+                        .WithMany("Invoice")
+                        .HasForeignKey("SalesPersonId");
 
-                    b.HasOne("API.Entities.Tax", "Tax")
-                        .WithOne("Invoice")
-                        .HasForeignKey("API.Entities.Invoice", "TaxId");
+                    b.HasOne("API.Entities.Tax", null)
+                        .WithMany("Invoices")
+                        .HasForeignKey("TaxId");
 
                     b.HasOne("API.Entities.Terms", "Terms")
-                        .WithOne("Invoice")
-                        .HasForeignKey("API.Entities.Invoice", "TermsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("Invoices")
+                        .HasForeignKey("TermsId");
 
                     b.Navigation("Customer");
 
-                    b.Navigation("Item");
-
                     b.Navigation("SalesPerson");
-
-                    b.Navigation("Tax");
 
                     b.Navigation("Terms");
                 });
 
-            modelBuilder.Entity("API.Entities.Item", b =>
+            modelBuilder.Entity("API.Entities.InvoiceItem", b =>
                 {
+                    b.HasOne("API.Entities.Invoice", "Invoice")
+                        .WithMany("Items")
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("API.Entities.Item", "Item")
+                        .WithMany("Invoice")
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("API.Entities.Tax", "Tax")
-                        .WithOne("Item")
-                        .HasForeignKey("API.Entities.Item", "TaxId");
+                        .WithMany("InvoiceItems")
+                        .HasForeignKey("TaxId");
+
+                    b.Navigation("Invoice");
+
+                    b.Navigation("Item");
 
                     b.Navigation("Tax");
                 });
@@ -883,6 +974,8 @@ namespace API.Migrations
             modelBuilder.Entity("API.Entities.Invoice", b =>
                 {
                     b.Navigation("Income");
+
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("API.Entities.Item", b =>
@@ -901,14 +994,14 @@ namespace API.Migrations
 
                     b.Navigation("Expenses");
 
-                    b.Navigation("Invoice");
+                    b.Navigation("InvoiceItems");
 
-                    b.Navigation("Item");
+                    b.Navigation("Invoices");
                 });
 
             modelBuilder.Entity("API.Entities.Terms", b =>
                 {
-                    b.Navigation("Invoice");
+                    b.Navigation("Invoices");
                 });
 #pragma warning restore 612, 618
         }

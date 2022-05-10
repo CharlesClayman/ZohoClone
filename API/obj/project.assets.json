@@ -9880,6 +9880,7 @@
       "Microsoft.EntityFrameworkCore.Tools >= 6.0.1",
       "Microsoft.IdentityModel.Tokens >= 6.15.1",
       "Microsoft.VisualStudio.Web.CodeGeneration.Design >= 6.0.1",
+      "Newtonsoft.Json >= 13.0.1",
       "Swashbuckle.AspNetCore >= 6.2.3",
       "System.IdentityModel.Tokens.Jwt >= 6.15.1"
     ]
@@ -9968,6 +9969,10 @@
             "target": "Package",
             "version": "[6.0.1, )"
           },
+          "Newtonsoft.Json": {
+            "target": "Package",
+            "version": "[13.0.1, )"
+          },
           "Swashbuckle.AspNetCore": {
             "target": "Package",
             "version": "[6.2.3, )"
@@ -9995,7 +10000,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.101\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.201\\RuntimeIdentifierGraph.json"
       }
     }
   }

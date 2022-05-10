@@ -1,0 +1,72 @@
+<div class="container">
+  <div class="title">
+    <h3>Edit Item</h3>
+  </div>
+  <hr />
+  <form [formGroup]="itemsForm" (ngSubmit)="updateItem()">
+    <div class="form-content">
+      <label>Type</label>
+      <div class="radioWrapperr">
+        <input
+          type="radio"
+          formControlName="itemType"
+          [value]="itemType.Goods"
+        /><label style="margin-right: 10px">Goods</label>
+        <input
+          type="radio"
+          formControlName="itemType"
+          [value]="itemType.Service"
+        /><label>Service</label>
+      </div>
+
+      <label style="color: red">Name*</label>
+      <div class="wrapper">
+        <input
+          type="text"
+          class="form-control form-control-sm"
+          formControlName="name"
+          placeholder="Item Name"
+        />
+      </div>
+      <label>Unit</label>
+      <div class="wrapper">
+        <select class="form-select form-select-sm mb-1" formControlName="unit">
+          <option *ngFor="let unit of units" [ngValue]="unit">
+            {{ unit }}
+          </option>
+        </select>
+      </div>
+      <label style="color: red">Selling Price*</label>
+      <div class="wrapper">
+        <div class="input-group mb-3">
+          <select class="form-select" id="currency" formControlName="currency">
+            <option [ngValue]="item" *ngFor="let item of currencies">
+              {{ item }}
+            </option>
+          </select>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="price"
+            formControlName="sellingPrice"
+          />
+        </div>
+      </div>
+      <label>Description</label>
+      <div class="wrapper">
+        <textarea rows="4" cols="40" formControlName="description"> </textarea>
+      </div>
+    </div>
+    <div class="save-cancel mt-5">
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="!itemFormValid()"
+      >
+        Save Changes
+      </button>
+      <button type="button" class="btn" routerLink="/items">Cancel</button>
+    </div>
+    <br /><br />
+  </form>
+</div>
