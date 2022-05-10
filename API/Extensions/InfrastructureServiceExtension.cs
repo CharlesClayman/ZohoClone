@@ -1,8 +1,13 @@
 ﻿using API.Data;
 using API.Entities;
+using API.Helpers;
 using API.Interfaces;
 using API.Services;
+
 using Microsoft.EntityFrameworkCore;
+
+using NETCore.MailKit.Extensions;
+using NETCore.MailKit.Infrastructure.Internal;
 
 namespace API.Extensions
 {
@@ -23,10 +28,20 @@ namespace API.Extensions
             services.AddScoped<IRepository<CustomerOtherDetails, Guid>, Repository<CustomerOtherDetails, Guid>>();
             services.AddScoped<IRepository<CustomerContactPerson, Guid>, Repository<CustomerContactPerson, Guid>>();
             services.AddScoped<IRepository<Category, Guid>, Repository<Category, Guid>>();
-            services.AddScoped<IRepository<Tax, Guid>, Repository<Tax, Guid>>();            
+            services.AddScoped<IRepository<Tax, Guid>, Repository<Tax, Guid>>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<ICurrentUserService, CurrentUserService>();
+            services.AddTransient<ITemplateService, TemplateService>();
+            services.AddTransient<IMailService, MailkitMailService>();
+            services.AddTransient<IUrlService, UrlService>();
+            services.AddTransient<IAppMailService, AppMailService>();
 
+            services.AddMailKit(option =>
+            {
+                option.UseMailKit(configuration.GetSection(nameof(MailKitOptions)).Get<MailKitOptions>());
+            });
+
+            services.Configure<ClientSettingOptions>(configuration.GetSection(nameof(ClientSettingOptions)));
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddDbContext<DataContext>(options =>
